@@ -1,4 +1,4 @@
-import src.VoiceTextWebAPIKey as Key
+import VoiceTextWebAPIKey as Key
 import requests
 
 
@@ -40,7 +40,7 @@ def request_to_voice_text(new_parameter: dict, obtained_voice_filename: str) -> 
     if response.status_code is requests.codes.ok:
         with open(obtainedVoiceSavePath.format(obtained_voice_filename), 'wb') as f:
             f.write(response.content)
-            print("finish.")
+            print("finish voice download.")
     else:
         print("[ERROR] status_code: {}".format(response.status_code))
 
