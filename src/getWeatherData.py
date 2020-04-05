@@ -22,20 +22,23 @@ def get_weather_forecast() -> list:
     weather_data = []
 
     for forecast in json_data['forecasts']:  # 'forecasts'内は配列になっているのでループ処理
-        date = forecast['date']  # 予報日(yyyy-mm-dd)
-        telop = forecast['telop']  # 天気
         t_max = forecast['temperature'].get('max')  # 'max'の値がnullの場合があるのでgetメソッド
         t_min = forecast['temperature'].get('min')  # 'min'の値がnullの場合があるのでgetメソッド
         if t_max is not None and t_min is not None:  # 'max', 'min'の値がNoneじゃなかった場合の処理
             t_max = t_max['celsius']
             t_min = t_min['celsius']
-        data = {'date': date, 'telop': telop, 'temp_max': t_max, 'temp_min': t_min}
+        # 取得したデータのうち必要な部分だけ格納
+        data = {
+            'date': forecast['date'],    # 予報日(yyyy-mm-dd)
+            'telop': forecast['telop'],  # 天気
+            'temp_max': t_max,           # 最高気温
+            'temp_min': t_min}           # 最低気温
         weather_data.append(data)
 
     return weather_data
 
 
-def set_weather_forecast_to_db(weather_data: dict) -> None:
+def set_weather_forecast_to_db(weather_data: list) -> None:
     """
     天気予報データをデータベースに格納する。
 
@@ -57,8 +60,8 @@ def set_weather_forecast_to_db(weather_data: dict) -> None:
         c.execute("INSERT INTO {} VALUES (?,?,?,?)".format(table_name), (
                     data['date'],
                     data['telop'],
-                    'null' if data['temp_max'] is None else data['temp_max'],
-                    'null' if data['temp_min'] is None else data['temp_min']
+                    data['temp_max'],
+                    data['temp_min']
                 )
             )
 
