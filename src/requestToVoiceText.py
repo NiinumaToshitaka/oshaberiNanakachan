@@ -8,19 +8,36 @@ requestURL = 'https://api.voicetext.jp/v1/tts'
 """APIのリクエストURL"""
 
 
-def request_to_voice_text(data: dict) -> None:
+def request_to_voice_text(new_parameter: dict) -> None:
     """リクエストパラメータを基に音声を合成する。
 
     Args:
-        data (dict): APIに投げるリクエストパラメータ
+        new_parameter (dict): APIに投げるリクエストパラメータ
 
     Returns:
         None
     """
-    response = requests.post(requestURL, data=data, auth=(Key.API_KEY, ''))
+
+    parameter = {
+        'text': 'おはようございます',
+        'speaker': 'hikari',
+        'format': 'wav',
+        'emotion': 'happiness',
+        'emotion_level': 2,
+        'pitch': 120,
+        'speed': 100,
+        'volume': 100,
+    }
+    """APIに投げるリクエストパラメータの初期値。
+    各パラメータの詳細は<https://cloud.voicetext.jp/webapi/docs/api>を参照
+    """
+
+    parameter.update(new_parameter)
+
+    response = requests.post(requestURL, data=parameter, auth=(Key.API_KEY, ''))
 
     if response.status_code is requests.codes.ok:
-        with open(obtainedVoiceSavePath.format(data['text']), 'wb') as f:
+        with open(obtainedVoiceSavePath.format(new_parameter['text']), 'wb') as f:
             f.write(response.content)
             print("finish.")
     else:
@@ -28,18 +45,8 @@ def request_to_voice_text(data: dict) -> None:
 
 
 if __name__ == '__main__':
-    parameter = {
-        'text': 'そろそろ寝なくちゃダメですよ',
-        'speaker': 'hikari',
-        'format': 'wav',
-        'emotion': 'happiness',
-        # 'emotion_level': 2,
-        'pitch': 120,
-        'speed': 100,
-        'volume': 100,
+    data = {
+        'text': '今日もお仕事お疲れ様でした',
     }
-    """APIに投げるリクエストパラメータ。    
-    各パラメータの詳細は<https://cloud.voicetext.jp/webapi/docs/api>を参照
-    """
 
-    request_to_voice_text(parameter)
+    request_to_voice_text(data)
