@@ -151,21 +151,15 @@ def listen_print_loop(responses):
             num_chars_printed = len(transcript)
 
         else:
-            print(transcript + overwrite_chars)
-
-            # Exit recognition if any of the transcribed phrases could be
-            # one of our keywords.
-            if re.search(r'\b(exit|quit)\b', transcript, re.I):
-                print('Exiting..')
-                break
-
-            num_chars_printed = 0
+            text = transcript + overwrite_chars
+            print(text)
+            return text
 
 
-def main():
+def listen():
     # See http://g.co/cloud/speech/docs/languages
     # for a list of supported languages.
-    language_code = 'en-US'  # a BCP-47 language tag
+    language_code = 'ja-JP'  # a BCP-47 language tag
 
     client = speech.SpeechClient()
     config = types.RecognitionConfig(
@@ -174,7 +168,11 @@ def main():
         language_code=language_code)
     streaming_config = types.StreamingRecognitionConfig(
         config=config,
-        interim_results=True)
+        interim_results=True,
+        single_utterance=True,
+    )
+
+    text = None
 
     with MicrophoneStream(RATE, CHUNK) as stream:
         audio_generator = stream.generator()
@@ -184,9 +182,11 @@ def main():
         responses = client.streaming_recognize(streaming_config, requests)
 
         # Now, put the transcription responses to use.
-        listen_print_loop(responses)
+        text = listen_print_loop(responses)
+
+    return text
 
 
 if __name__ == '__main__':
-    main()
+    listen()
 # [END speech_transcribe_streaming_mic]
