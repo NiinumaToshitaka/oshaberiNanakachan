@@ -144,15 +144,8 @@ def listen_print_loop(responses):
         # some extra spaces to overwrite the previous result
         overwrite_chars = ' ' * (num_chars_printed - len(transcript))
 
-        if not result.is_final:
-            sys.stdout.write(transcript + overwrite_chars + '\r')
-            sys.stdout.flush()
-
-            num_chars_printed = len(transcript)
-
-        else:
+        if result.is_final:
             text = transcript + overwrite_chars
-            print(text)
             return text
 
 
