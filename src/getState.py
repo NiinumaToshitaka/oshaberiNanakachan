@@ -1,6 +1,7 @@
 def get_state(input_message: str) -> str:
     """
     入力メッセージに対応する状態を返す。
+
     :param input_message: 入力メッセージ
     :return: 入力メッセージに対応する状態名
     """
