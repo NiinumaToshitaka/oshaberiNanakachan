@@ -4,10 +4,15 @@ import requests
 obtainedVoiceSavePath = '../voice/{}.wav'
 requestURL = 'https://api.voicetext.jp/v1/tts'
 
-data = {
-    'text': '行ってらっしゃい',
-    'speaker': 'haruka'
+parameter = {
+    'speaker': 'hikari',
+    'pitch': 120,
+    'emotion': 'happiness',
+    'emotion_level': 2,
 }
+data = parameter
+
+data['text'] ='おはようございます'
 
 response = requests.post(requestURL, data=data, auth=(Key.API_KEY, ''))
 
