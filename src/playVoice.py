@@ -1,7 +1,7 @@
 import subprocess
 import random
-import sqlite3
 import requestToVoiceText as requestToVoiceText
+import dbAccess as dbAccess
 
 
 voiceDataDir = "../voice/{}.wav"
@@ -36,7 +36,9 @@ def play_voice(state: str) -> None:
         # リストからランダムに音声を指定
         voice_file = voiceDataDir.format(random.choice(voiceDataFiles[state]))
     elif state is "weather":
-        get_weather_forecast_voice()
+        # [TODO] 日付を取得する処理を入れる
+        date = '2020-04-09'
+        get_weather_forecast_voice(date)
         voice_file = voiceDataDir.format(voiceData_todayWeather)
     elif state is "go_out":
         # [TODO] 雨が降る予報のときの処理
@@ -49,27 +51,19 @@ def play_voice(state: str) -> None:
     return
 
 
-def get_weather_forecast_voice():
-    db_path = 'weather.db'
-    table_name = 'weather'
+def get_weather_forecast_voice(date: str) -> None:
+    """天気予報を読み上げる音声を取得する。
 
-    conn = sqlite3.connect(db_path)
-    conn.row_factory = sqlite3.Row
-    c = conn.cursor()
+    Args:
+        date (str): 日付を表す文字列('YYYY-MM-DD')
 
-    # 今日の日付の天気予報データを取得
-    c.execute("SELECT * FROM {} WHERE date = date('now')".format(table_name))
-    # 取得した天気予報データを格納
-    data = {}
-    # [TODO] 要素が1つだけであることを期待しているので、for文で回すのは不適切
-    for item in c:
-        data['date'] = item['date']
-        data['telop'] = item['telop']
-        data['temp_max'] = item['temp_max']
-        data['temp_min'] = item['temp_min']
+    Return:
+        None
+    """
+    # データベースから天気予報データを取得する
+    data = dbAccess.get_weather_forecast_from_db(date)
 
-    conn.commit()
-    conn.close()
+    # [TODO] データベースから天気予報データを取得できなかったときの処理
 
     # 最高気温または最低気温のデータがないときは天気のみ読み上げる
     if data['temp_max'] is None or data['temp_min'] is None:
