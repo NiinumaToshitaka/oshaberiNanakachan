@@ -4,6 +4,7 @@
 
 import sqlite3
 import getWeatherData as getWeatherData
+import datetime
 
 
 db_path = 'weather.db'
@@ -45,11 +46,11 @@ def set_weather_forecast_to_db(weather_data: list) -> None:
     conn.close()
 
 
-def get_weather_forecast_from_db(date: str) -> dict:
+def get_weather_forecast_from_db(date: datetime.datetime) -> dict:
     """データベースから指定された日付の天気予報データを取得する。
 
     Args:
-        date (str): 天気予報データを呼び出す日付('YYYY-MM-DD')
+        date (datetime.datetime): データベースから天気予報データを取得する日時
 
     Returns:
         data (dict): 指定された日付の天気予報データ
@@ -60,7 +61,7 @@ def get_weather_forecast_from_db(date: str) -> dict:
     c = conn.cursor()
 
     # 指定された日付の天気予報データを取得
-    c.execute("SELECT * FROM {} WHERE date=?".format(table_name), (date,))
+    c.execute("SELECT * FROM {} WHERE date=?".format(table_name), (date.strftime('%Y-%m-%d'),))
 
     # 取得した天気予報データを格納
     data = {}
@@ -80,5 +81,5 @@ def get_weather_forecast_from_db(date: str) -> dict:
 if __name__ == '__main__':
     weather_data = getWeatherData.get_weather_forecast()
     set_weather_forecast_to_db(weather_data)
-    data = get_weather_forecast_from_db('2020-04-09')
+    data = get_weather_forecast_from_db(datetime.datetime.now())
     print(data)
