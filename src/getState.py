@@ -16,6 +16,8 @@ def get_state(input_message: str) -> str:
     elif input_message == "おやすみ":
         state = "night"
     elif input_message == "今日の天気は":
-        state = "weather"
+        state = "weather_today"
+    elif input_message == "明日の天気は":
+        state = "weather_tomorrow"
 
     return state

@@ -3,7 +3,6 @@
 
 import requests
 import json
-import sqlite3
 
 
 base_url = 'http://weather.livedoor.com/forecast/webservice/json/v1'
@@ -11,10 +10,10 @@ params = {'city': '140010'}  # 横浜市のID
 
 
 def get_weather_forecast() -> list:
-    """
-    天気予報データを取得する。
+    """天気予報データを取得する。
 
-    :return: weather_data: 天気予報データ
+    Returns:
+        weather_data (list): 天気予報データ
     """
     response = requests.get(base_url, params=params)    # リクエストを投げる
     json_data = json.loads(response.content)
@@ -38,37 +37,6 @@ def get_weather_forecast() -> list:
     return weather_data
 
 
-def set_weather_forecast_to_db(weather_data: list) -> None:
-    """
-    天気予報データをデータベースに格納する。
-
-    :param weather_data: 天気予報データ
-    """
-
-    db_path = 'weather.db'
-    table_name = 'weather'
-
-    conn = sqlite3.connect(db_path)
-    c = conn.cursor()
-
-    # 過去の天気予報データは不要なので都度初期化
-    c.execute("DROP TABLE IF EXISTS {}".format(table_name))
-    c.execute("CREATE TABLE {} (date TEXT PRIMARY KEY, telop TEXT NOT NULL, temp_max INTEGER, temp_min INTEGER)".format(table_name))
-
-    # データベースに天気予報データを登録
-    for data in weather_data:
-        c.execute("INSERT INTO {} VALUES (?,?,?,?)".format(table_name), (
-                    data['date'],
-                    data['telop'],
-                    data['temp_max'],
-                    data['temp_min']
-                )
-            )
-
-    conn.commit()
-    conn.close()
-
-
 if __name__ == '__main__':
     weather_data = get_weather_forecast()
-    set_weather_forecast_to_db(weather_data)
+    print(weather_data)
