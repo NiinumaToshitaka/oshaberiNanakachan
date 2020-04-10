@@ -41,6 +41,19 @@ def play_voice_file(voice_file_path: str) -> None:
     return
 
 
+def get_voice_file_path(state: str) -> str:
+    """状態に対応する音声ファイルのパスを返す。
+
+    Args:
+        state: 状態
+
+    Returns:
+        str: 状態に対応する音声ファイルのパス
+
+    """
+    return voiceDataDir.format(random.choice(voiceDataFiles[state]))
+
+
 def play_voice(state: str) -> None:
     """現在の状態に対応する音声を再生する。
 
@@ -51,24 +64,24 @@ def play_voice(state: str) -> None:
         None
     """
 
-    voice_file = voiceDataDir.format(random.choice(voiceDataFiles["unknown"]))
+    voice_file = get_voice_file_path("unknown")
     """再生する音声ファイルのパス"""
     # 現在の状態に対応する音声ファイルを取得
     if state in voiceDataFiles:
         # リストからランダムに音声を指定
-        voice_file = voiceDataDir.format(random.choice(voiceDataFiles[state]))
+        voice_file = get_voice_file_path(state)
     # 天気予報を読み上げる音声ファイルを取得
     elif state is "weather_today":
         if get_weather_forecast_voice(datetime.datetime.now()):
-            voice_file = voiceDataDir.format(random.choice(voiceDataFiles["weather"]))
+            voice_file = get_voice_file_path("weather")
         else:
-            voice_file = voiceDataDir.format(random.choice(voiceDataFiles["failedToGetWeatherData"]))
+            voice_file = get_voice_file_path("failedToGetWeatherData")
             pass
     elif state is "weather_tomorrow":
         if get_weather_forecast_voice(datetime.datetime.now() + datetime.timedelta(days=1)):
-            voice_file = voiceDataDir.format(random.choice(voiceDataFiles["weather"]))
+            voice_file = get_voice_file_path("weather")
         else:
-            voice_file = voiceDataDir.format(random.choice(voiceDataFiles["failedToGetWeatherData"]))
+            voice_file = get_voice_file_path("failedToGetWeatherData")
 
     # 音声を再生
     play_voice_file(voice_file)
@@ -76,13 +89,12 @@ def play_voice(state: str) -> None:
     # 悪い予報のときは外出時に傘を持つよう警告する
     if state is "go_out":
         weather_forecast_data = dbAccess.get_weather_forecast_from_db(datetime.datetime.now())
-        print(weather_forecast_data)
         is_bad_weather = False
         for weather in bad_weather:
             if weather in weather_forecast_data['telop']:
                 is_bad_weather = True
         if is_bad_weather:
-            play_voice_file(voiceDataDir.format(random.choice(voiceDataFiles["badWeather"])))
+            play_voice_file(get_voice_file_path("badWeather"))
 
     return
 
@@ -129,4 +141,4 @@ def get_weather_forecast_voice(date: datetime.datetime) -> bool:
 
 
 if __name__ == '__main__':
-    play_voice("weather_today")
+    play_voice("go_out")
