@@ -13,14 +13,12 @@ voiceDataFiles = {
     "go_out": ["今日もお仕事頑張ってきてください", "行ってらっしゃい"],
     "back": ["おかえりなさい"],
     "night": ["おやすみなさい"],
+    "unknown": ["ごめんなさい、ちょっとよくわかりません"],
+    "weather": ["天気予報"],
+    "badWeather": ["傘を持つのを忘れないでくださいね"],
+    "failedToGetWeatherData": ["ごめんなさい、天気情報を取得できませんでした"],
 }
 """状態ごとの音声ファイル一覧"""
-voiceData_unknownInputMessage = "ごめんなさい、ちょっとよくわかりません"
-"""対応する状態が存在しない場合のエラー通知音声"""
-voiceData_weather = "天気予報"
-"""天気予報を読み上げる音声ファイル"""
-voiceData_badWeather = "傘を持つのを忘れないでくださいね"
-"""悪い天気のときに傘を持つよう警告する音声ファイル"""
 bad_weather = ['雨', '雪']
 """悪い天気を表すテキスト"""
 
@@ -43,6 +41,19 @@ def play_voice_file(voice_file_path: str) -> None:
     return
 
 
+def get_voice_file_path(state: str) -> str:
+    """状態に対応する音声ファイルのパスを返す。
+
+    Args:
+        state: 状態
+
+    Returns:
+        str: 状態に対応する音声ファイルのパス
+
+    """
+    return voiceDataDir.format(random.choice(voiceDataFiles[state]))
+
+
 def play_voice(state: str) -> None:
     """現在の状態に対応する音声を再生する。
 
@@ -53,25 +64,24 @@ def play_voice(state: str) -> None:
         None
     """
 
-    voice_file = voiceDataDir.format(voiceData_unknownInputMessage)
+    voice_file = get_voice_file_path("unknown")
     """再生する音声ファイルのパス"""
     # 現在の状態に対応する音声ファイルを取得
     if state in voiceDataFiles:
         # リストからランダムに音声を指定
-        voice_file = voiceDataDir.format(random.choice(voiceDataFiles[state]))
+        voice_file = get_voice_file_path(state)
     # 天気予報を読み上げる音声ファイルを取得
     elif state is "weather_today":
         if get_weather_forecast_voice(datetime.datetime.now()):
-            voice_file = voiceDataDir.format(voiceData_weather)
+            voice_file = get_voice_file_path("weather")
         else:
-            # [TODO] 天気予報データを取得できなかった場合は、その旨を伝えるボイスを再生する
+            voice_file = get_voice_file_path("failedToGetWeatherData")
             pass
     elif state is "weather_tomorrow":
         if get_weather_forecast_voice(datetime.datetime.now() + datetime.timedelta(days=1)):
-            voice_file = voiceDataDir.format(voiceData_weather)
+            voice_file = get_voice_file_path("weather")
         else:
-            # [TODO] 天気予報データを取得できなかった場合は、その旨を伝えるボイスを再生する
-            pass
+            voice_file = get_voice_file_path("failedToGetWeatherData")
 
     # 音声を再生
     play_voice_file(voice_file)
@@ -79,13 +89,12 @@ def play_voice(state: str) -> None:
     # 悪い予報のときは外出時に傘を持つよう警告する
     if state is "go_out":
         weather_forecast_data = dbAccess.get_weather_forecast_from_db(datetime.datetime.now())
-        print(weather_forecast_data)
         is_bad_weather = False
         for weather in bad_weather:
             if weather in weather_forecast_data['telop']:
                 is_bad_weather = True
         if is_bad_weather:
-            play_voice_file(voiceDataDir.format(voiceData_badWeather))
+            play_voice_file(get_voice_file_path("badWeather"))
 
     return
 
@@ -126,10 +135,10 @@ def get_weather_forecast_voice(date: datetime.datetime) -> bool:
 
     # 天気予報データを読み上げるボイスを合成
     request_data = {'text': weather_voice_base_string}
-    requestToVoiceText.request_to_voice_text(request_data, voiceData_weather)
+    requestToVoiceText.request_to_voice_text(request_data, random.choice(voiceDataFiles["weather"]))
 
     return True
 
 
 if __name__ == '__main__':
-    play_voice("weather_today")
+    play_voice("go_out")
