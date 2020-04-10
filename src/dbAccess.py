@@ -23,8 +23,6 @@ def set_weather_forecast_to_db(weather_data: list) -> None:
         None
     """
 
-    # [TODO] データベースのファイルが存在しなければ作成する処理を入れる
-
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
 

@@ -113,7 +113,7 @@ def get_weather_forecast_voice(date: datetime.datetime) -> None:
     # 天気テキストを作成
     weather_voice_base_string += "{}です。".format(weather_forecast_data['telop'])
     # 温度データが存在する場合は温度データテキストを作成
-    if weather_forecast_data['temp_max'] is not None or weather_forecast_data['temp_min'] is not None:
+    if weather_forecast_data['temp_max'] is not None and weather_forecast_data['temp_min'] is not None:
         weather_voice_base_string += "最高気温は{}度、最低気温は{}度です。".format(weather_forecast_data['temp_max'], weather_forecast_data['temp_min'])
 
     # 天気予報データを読み上げるボイスを合成
