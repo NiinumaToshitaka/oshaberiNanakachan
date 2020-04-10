@@ -61,11 +61,17 @@ def play_voice(state: str) -> None:
         voice_file = voiceDataDir.format(random.choice(voiceDataFiles[state]))
     # 天気予報を読み上げる音声ファイルを取得
     elif state is "weather_today":
-        get_weather_forecast_voice(datetime.datetime.now())
-        voice_file = voiceDataDir.format(voiceData_weather)
+        if get_weather_forecast_voice(datetime.datetime.now()):
+            voice_file = voiceDataDir.format(voiceData_weather)
+        else:
+            # [TODO] 天気予報データを取得できなかった場合は、その旨を伝えるボイスを再生する
+            pass
     elif state is "weather_tomorrow":
-        get_weather_forecast_voice(datetime.datetime.now() + datetime.timedelta(days=1))
-        voice_file = voiceDataDir.format(voiceData_weather)
+        if get_weather_forecast_voice(datetime.datetime.now() + datetime.timedelta(days=1)):
+            voice_file = voiceDataDir.format(voiceData_weather)
+        else:
+            # [TODO] 天気予報データを取得できなかった場合は、その旨を伝えるボイスを再生する
+            pass
 
     # 音声を再生
     play_voice_file(voice_file)
@@ -76,8 +82,6 @@ def play_voice(state: str) -> None:
         print(weather_forecast_data)
         is_bad_weather = False
         for weather in bad_weather:
-            print('weather: ' + weather)
-            print('weather_forecast_data[telop]: ' + weather_forecast_data['telop'])
             if weather in weather_forecast_data['telop']:
                 is_bad_weather = True
         if is_bad_weather:
@@ -86,20 +90,24 @@ def play_voice(state: str) -> None:
     return
 
 
-def get_weather_forecast_voice(date: datetime.datetime) -> None:
+def get_weather_forecast_voice(date: datetime.datetime) -> bool:
     """天気予報を読み上げる音声を取得する。
 
     Args:
         date (datetime.datetime): データベースから天気予報データを取得する日時
 
     Return:
-        None
+        (bool): 音声取得に成功したか否か。
+                    True: 成功
+                    False: 失敗
     """
 
     # データベースから天気予報データを取得する
     weather_forecast_data = dbAccess.get_weather_forecast_from_db(date)
 
-    # [TODO] データベースから天気予報データを取得できなかったときの処理
+    # 天気予報データを取得できなかった場合は何もしない
+    if not weather_forecast_data:
+        return False
 
     # 日付テキストを作成
     weather_voice_base_string = "{}月{}日の天気は".format(date.today().month, date.today().day)
@@ -120,6 +128,8 @@ def get_weather_forecast_voice(date: datetime.datetime) -> None:
     request_data = {'text': weather_voice_base_string}
     requestToVoiceText.request_to_voice_text(request_data, voiceData_weather)
 
+    return True
+
 
 if __name__ == '__main__':
-    play_voice("go_out")
+    play_voice("weather_today")

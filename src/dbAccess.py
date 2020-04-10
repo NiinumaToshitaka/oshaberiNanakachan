@@ -5,6 +5,7 @@
 import sqlite3
 import getWeatherData as getWeatherData
 import datetime
+import os
 
 
 db_path = 'weather.db'
@@ -53,6 +54,10 @@ def get_weather_forecast_from_db(date: datetime.datetime) -> dict:
     Returns:
         data (dict): 指定された日付の天気予報データ
     """
+
+    # データベースファイルが存在しない場合は空のデータを返す
+    if not os.path.isfile(db_path):
+        return {}
 
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
