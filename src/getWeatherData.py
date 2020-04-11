@@ -1,4 +1,6 @@
 """Weather Hacksから天気予報を取得
+レスポンスの仕様は下記リンクの通り。（2020/04/11現在）
+<http://weather.livedoor.com/weather_hacks/webservice>
 """
 
 import requests
@@ -23,8 +25,10 @@ def get_weather_forecast() -> list:
     for forecast in json_data['forecasts']:  # 'forecasts'内は配列になっているのでループ処理
         t_max = forecast['temperature'].get('max')  # 'max'の値がnullの場合があるのでgetメソッド
         t_min = forecast['temperature'].get('min')  # 'min'の値がnullの場合があるのでgetメソッド
-        if t_max is not None and t_min is not None:  # 'max', 'min'の値がNoneじゃなかった場合の処理
+        # 'max', 'min'の値がNoneじゃなかった場合は摂氏を取得
+        if t_max is not None:
             t_max = t_max['celsius']
+        if t_min is not None:
             t_min = t_min['celsius']
         # 取得したデータのうち必要な部分だけ格納
         data = {
@@ -39,4 +43,5 @@ def get_weather_forecast() -> list:
 
 if __name__ == '__main__':
     weather_data = get_weather_forecast()
-    print(weather_data)
+    from pprint import pprint
+    pprint(weather_data)

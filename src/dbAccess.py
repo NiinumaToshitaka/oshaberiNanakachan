@@ -82,7 +82,13 @@ def get_weather_forecast_from_db(date: datetime.datetime) -> dict:
 
 
 if __name__ == '__main__':
+    from pprint import pprint
     weather_data = getWeatherData.get_weather_forecast()
+    print("weather_data")
+    pprint(weather_data)
+    print("-" * 20)
     set_weather_forecast_to_db(weather_data)
     data = get_weather_forecast_from_db(datetime.datetime.now())
-    print(data)
+    print("data")
+    pprint(data)
+    print("-" * 20)
