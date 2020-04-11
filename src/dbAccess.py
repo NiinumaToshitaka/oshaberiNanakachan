@@ -68,12 +68,11 @@ def get_weather_forecast_from_db(date: datetime.datetime) -> dict:
 
     # 取得した天気予報データを格納
     data = {}
-    # [TODO] 要素が1つだけであることを期待しているので、for文で回すのは不適切
-    for item in c:
-        data['date'] = item['date']
-        data['telop'] = item['telop']
-        data['temp_max'] = item['temp_max']
-        data['temp_min'] = item['temp_min']
+    fetched_data = c.fetchone()
+    data['date'] = fetched_data['date']
+    data['telop'] = fetched_data['telop']
+    data['temp_max'] = fetched_data['temp_max']
+    data['temp_min'] = fetched_data['temp_min']
 
     conn.commit()
     conn.close()
@@ -82,7 +81,13 @@ def get_weather_forecast_from_db(date: datetime.datetime) -> dict:
 
 
 if __name__ == '__main__':
+    from pprint import pprint
     weather_data = getWeatherData.get_weather_forecast()
+    print("weather_data")
+    pprint(weather_data)
+    print("-" * 20)
     set_weather_forecast_to_db(weather_data)
     data = get_weather_forecast_from_db(datetime.datetime.now())
-    print(data)
+    print("data")
+    pprint(data)
+    print("-" * 20)
