@@ -31,38 +31,46 @@
 | Name | Version | Comment |
 |:---|:---|:---|
 | Python | 3.6.9 | |
-| SQLite | 3.22.0 | 天気予報データベース |
+| SQLite | 3.22.0 | 天気予報データベースに使用 |
 | aplay | 1.1.3 | 音声再生ツール |
-| (gcloudコマンドラインツール) | | |
+
+### gcloudツール
+| Name | Version | Comment |
+|:---|:---|:---|
+| Google Cloud SDK | 288.0.0 | |
+| alpha | 2020.04.03 | |
+| beta | 2020.04.03 | |
+| bq | 2.0.56 | |
+| core | 2020.04.03 | |
+| gsutil | 4.49 | |
+| kubectl | 2020.04.03 | |
 
 ### Pythonライブラリ
-| Package | Version |
-|:---|:---|
-| cachetools | 4.0.0 |
-| certifi | 2019.11.28 |
-| chardet | 3.0.4 |
-| google-api-core | 1.16.0 |
-| google-auth | 1.13.1 |
-| google-cloud-core | 1.3.0 |
-| google-cloud-speech | 1.3.2 |
-| google-cloud-storage | 1.27.0 |
-| google-resumable-media | 0.5.0 |
-| googleapis-common-protos | 1.51.0 |
-| grpcio | 1.28.1 |
-| idna | 2.9 |
-| pip | 20.0.2 |
-| pkg-resources | 0.0.0 |
-| protobuf | 3.11.3 |
-| pyasn1 | 0.4.8 |
-| pyasn1-modules | 0.2.8 |
-| PyAudio | 0.2.11 |
-| python-voicetext | 0.3.1 |
-| pytz | 2019.3 |
-| requests | 2.23.0 |
-| rsa | 4.0 |
-| setuptools | 46.1.3 |
-| six | 1.14.0 |
-| urllib3 | 1.25.8 |
+| Name | Version | Comment |
+|:---|:---|:---|
+| cachetools | 4.0.0 | |
+| certifi | 2019.11.28 | |
+| chardet | 3.0.4 | |
+| google-api-core | 1.16.0 | |
+| google-auth | 1.13.1 | |
+| google-cloud-core | 1.3.0 | |
+| google-cloud-speech | 1.3.2 | |
+| google-cloud-storage | 1.27.0 | |
+| google-resumable-media | 0.5.0 | |
+| googleapis-common-protos | 1.51.0 | |
+| grpcio | 1.28.1 | |
+| idna | 2.9 | |
+| pip | 20.0.2 | |
+| pkg-resources | 0.0.0 | |
+| protobuf | 3.11.3 | |
+| pyasn1 | 0.4.8 | |
+| pyasn1-modules | 0.2.8 | |
+| pytz | 2019.3 | |
+| requests | 2.23.0 | |
+| rsa | 4.0 | |
+| setuptools | 46.1.3 | |
+| six | 1.14.0 | |
+| urllib3 | 1.25.8 | |
 
 ### 利用している外部サービス
 * [Google Cloud Platform - Cloud Speech-to-Text API](https://cloud.google.com/speech-to-text)
@@ -76,10 +84,11 @@
 ## 環境構築
 
 ### 参考
-* [Google Cloud Platform - Setting up a Python development environment](https://cloud.google.com/python/setup)
+PythonとGoogle Cloud Platformまわり。
+* [Python > ガイド > Setting up a Python development environment](https://cloud.google.com/python/setup)
+* [Developer Tools > Cloud SDK: コマンドライン インターフェース > ドキュメント > Debian と Ubuntu 用のクイックスタート](https://cloud.google.com/sdk/docs/quickstart-debian-ubuntu)
+* [Storage Products > Cloud Storage > ドキュメント > リファレンス > Cloud Storage Client Libraries](https://cloud.google.com/storage/docs/reference/libraries)
 
-### Google Cloud Platform
-コマンドラインで`gloud`ツールを使用可能にする。
 
 ## 仕様
 
