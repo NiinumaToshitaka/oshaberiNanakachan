@@ -1,33 +1,46 @@
 # おしゃべり七香ちゃんシステム
+
 七香ちゃんとおしゃべりしよう！
 
-
 ## 機能
+
 マイクに向かって話しかけると、音声で応答してくれる。
 
 ### おしゃべり
+
 次のコマンドに対応。定形ボイスで応答してくれる。
+
 * おはよう
 * 行ってきます
 * ただいま
 * おやすみ
 
+[TODO] 上記コマンド以外の言葉を話しかけた場合、ランダムで応答してくれる。
+
+### 七香ぺでぃあ
+
+[TODO] 七香と一緒にいるとき、Wikipediaの記事をランダムに読み上げてくれる。
+
 ### 天気予報
+
 次のコマンドに対応。天気予報を教えてくれる。
+
 * 今日の天気は？
 * 明日の天気は？
 
 ### 悪天候時の警告
+
 天気予報が[悪天候リスト](#悪天候リスト)に該当する日に「行ってきます」と話しかけると、傘を持つように警告してくれる。
 
 #### 悪天候リスト
+
 * 雨
 * 雪
-
 
 ## 開発環境
 
 ### ソフトウェア
+
 | Name | Version | Comment |
 |:---|:---|:---|
 | Python | 3.6.9 | |
@@ -35,6 +48,7 @@
 | aplay | 1.1.3 | 音声再生ツール |
 
 ### gcloudツール
+
 | Name | Version | Comment |
 |:---|:---|:---|
 | Google Cloud SDK | 288.0.0 | |
@@ -46,6 +60,7 @@
 | kubectl | 2020.04.03 | |
 
 ### Pythonライブラリ
+
 | Name | Version | Comment |
 |:---|:---|:---|
 | cachetools | 4.0.0 | |
@@ -73,6 +88,7 @@
 | urllib3 | 1.25.8 | |
 
 ### 利用している外部サービス
+
 * [Google Cloud Platform - Cloud Speech-to-Text API](https://cloud.google.com/speech-to-text)
   * [ドキュメント](https://cloud.google.com/speech-to-text/docs)
 * [VoiceText Web API](https://cloud.voicetext.jp/webapi)
@@ -80,26 +96,28 @@
 * [Weather Hacks お天気Webサービス](http://weather.livedoor.com/weather_hacks)
   * [お天気Webサービス仕様](http://weather.livedoor.com/weather_hacks/webservice)
 
-
 ## 環境構築
 
 ### 参考
+
 PythonとGoogle Cloud Platformまわり。
+
 * [Python > ガイド > Setting up a Python development environment](https://cloud.google.com/python/setup)
 * [Developer Tools > Cloud SDK: コマンドライン インターフェース > ドキュメント > Debian と Ubuntu 用のクイックスタート](https://cloud.google.com/sdk/docs/quickstart-debian-ubuntu)
 * [Storage Products > Cloud Storage > ドキュメント > リファレンス > Cloud Storage Client Libraries](https://cloud.google.com/storage/docs/reference/libraries)
-
 
 ## 仕様
 
 ### 天気予報データベース
 
 #### テーブル定義
+
 | Name    | Comment      |
 |:--------|:-------------|
 | weather | 天気予報データ |
 
 #### weather
+
 | Field    | Type    | Null | Key | Default | Comment |
 |:---------|:--------|:-----|:----|:--------|:--------|
 | date     | TEXT    | YES  | PRI | N/A     | 日付     |
@@ -107,9 +125,9 @@ PythonとGoogle Cloud Platformまわり。
 | temp_max | INTEGER | YES  | N/A | N/A     | 最高気温 |
 | temp_min | INTEGER | YES  | N/A | N/A     | 最低気温 |
 
-
 ## ファイル構成
-```
+
+```tree
 /
 ├── .git
 ├── .gitignore

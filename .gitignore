@@ -4,3 +4,10 @@
 /venv/
 /src/OshaberiNanakaChan-03311cf17b12.json
 /src/weather.db
+
+# config files
+.idea/
+.vscode
+
+# temporary files
+__pycache__/
