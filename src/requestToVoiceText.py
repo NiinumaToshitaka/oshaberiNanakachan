@@ -152,17 +152,24 @@ class VoiceText:
             self.parameter['volume'] = volume
         return self
 
-    def request_to_voice_text(self) -> None:
+    def request_to_voice_text(self, save_file_name=None) -> None:
         """リクエストパラメータを基に音声を合成する。
+
+        Args:
+            save_file_name (str): 保存ファイル名
 
         Returns:
             None
         """
 
+        # 保存ファイル名が指定されていない場合は、テキストをファイル名とする
+        if save_file_name is None:
+            save_file_name = self.parameter['text']
+
         response = requests.post(VoiceText.requestURL, data=self.parameter, auth=(Key.API_KEY, ''))
 
         if response.status_code is requests.codes.ok:
-            with open(OBTAINED_VOICE_SAVE_PATH.format(self.parameter['text']), 'wb') as f:
+            with open(OBTAINED_VOICE_SAVE_PATH.format(save_file_name), 'wb') as f:
                 f.write(response.content)
                 print("finish voice download.")
         else:

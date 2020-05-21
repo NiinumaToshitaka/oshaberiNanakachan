@@ -134,11 +134,10 @@ def get_weather_forecast_voice(date: datetime.datetime) -> bool:
         weather_voice_base_string += "最高気温は{}度、最低気温は{}度です。".format(weather_forecast_data['temp_max'], weather_forecast_data['temp_min'])
 
     # 天気予報データを読み上げるボイスを合成
-    request_data = {'text': weather_voice_base_string}
-    requestToVoiceText.request_to_voice_text(request_data, random.choice(voiceDataFiles["weather"]))
+    requestToVoiceText.VoiceText().set_text(weather_voice_base_string).request_to_voice_text(random.choice(voiceDataFiles["weather"]))
 
     return True
 
 
 if __name__ == '__main__':
-    play_voice("go_out")
+    play_voice("weather_tomorrow")
