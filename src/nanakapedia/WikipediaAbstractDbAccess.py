@@ -14,15 +14,16 @@ class WikipediaAbstract:
     Wikipedia要約データを扱うクラス
     """
 
+    DB_PATH = 'wikipedia_abstract.db'
+    """Wikipedia要約データベースのファイルパス"""
+    TABLE_NAME = 'abstract'
+    """Wikipedia要約データテーブル名"""
+
     def __init__(self):
         """
         インスタンス変数の設定
         """
 
-        self.db_path = 'wikipedia_abstract.db'
-        """Wikipedia要約データベースのファイルパス"""
-        self.table_name = 'abstract'
-        """Wikipedia要約データテーブル名"""
         self.dump_file_path = '../../data/jawiki-latest-abstract.xml'
         """Wikipedia要約ダンプデータのファイルパス"""
         self.file_line_count = 0
@@ -80,17 +81,17 @@ class WikipediaAbstract:
 
         self.file_line_count = len(open(self.dump_file_path).readlines())
 
-        conn = sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(WikipediaAbstract.DB_PATH)
         """データベースに接続"""
         c = conn.cursor()
 
-        c.execute("create table IF NOT EXISTS {}(title text, abstract text)".format(self.table_name))
+        c.execute("create table IF NOT EXISTS {}(title text, abstract text)".format(WikipediaAbstract.TABLE_NAME))
         """テーブルが存在しない場合は作成"""
 
         # 要約データをパースして、タイトルと要約をデータベースへ登録する
         for body in self.file_read_generator():
             soup = BeautifulSoup(body, 'html.parser')
-            c.execute("INSERT INTO {} VALUES (?,?)".format(self.table_name), (soup.title.get_text().replace("Wikipedia: ", ""), soup.abstract.get_text()))
+            c.execute("INSERT INTO {} VALUES (?,?)".format(WikipediaAbstract.TABLE_NAME), (soup.title.get_text().replace("Wikipedia: ", ""), soup.abstract.get_text()))
 
         conn.commit()
         """コミットする"""
@@ -106,13 +107,13 @@ class WikipediaAbstract:
         """
 
         # データベースに接続
-        conn = sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(WikipediaAbstract.DB_PATH)
         # データベースから取得したデータに列名でアクセス可能にする
         conn.row_factory = sqlite3.Row
         c = conn.cursor()
 
         # データベースからランダムに要約データを1件取得
-        c.execute("SELECT * FROM {} ORDER BY RANDOM() limit 1".format(self.table_name))
+        c.execute("SELECT * FROM {} ORDER BY RANDOM() limit 1".format(WikipediaAbstract.TABLE_NAME))
 
         # 取得した要約データを格納
         data = {}
