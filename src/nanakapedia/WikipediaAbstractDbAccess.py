@@ -30,6 +30,15 @@ class WikipediaAbstract:
         self.read_line_count = 0
         """Wikipedia要約ダンプデータファイルを読み込んだ行数"""
 
+    def set_abstract_dump_file(self, file_path):
+        """
+        データベースへ登録するWikipedia要約ダンプデータを指定する
+
+        Return:
+            None
+        """
+        self.dump_file_path = file_path
+
     def file_read_generator(self):
         """
         XMLをパースして<doc> 〜 </doc>を読み込み返却するgenerator
