@@ -1,11 +1,17 @@
+# private keys
 /src/VoiceTextWebAPIKey.py
-/voice/
-/doc/
-/venv/
 /src/OshaberiNanakaChan-03311cf17b12.json
-/src/weather.db
 
-# config files
+# data files
+/voice/
+/venv/
+/data/
+/tmp/
+
+# SQLite database files
+*.db
+
+# IDE config files
 .idea/
 .vscode
 
