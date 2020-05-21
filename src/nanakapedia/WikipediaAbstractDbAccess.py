@@ -97,6 +97,34 @@ class WikipediaAbstract:
         conn.close()
         """データベースから切断する"""
 
+    def get_random_abstract_from_db(self) -> dict:
+        """
+        データベースからランダムにWikipedia要約データを取得する。
+
+        Returns:
+            data (dict): データベースから取得したWikipedia要約データ
+        """
+
+        # データベースに接続
+        conn = sqlite3.connect(self.db_path)
+        # データベースから取得したデータに列名でアクセス可能にする
+        conn.row_factory = sqlite3.Row
+        c = conn.cursor()
+
+        # データベースからランダムに要約データを1件取得
+        c.execute("SELECT * FROM {} ORDER BY RANDOM() limit 1".format(self.table_name))
+
+        # 取得した要約データを格納
+        data = {}
+        fetched_data = c.fetchone()
+        data['title'] = fetched_data['title']
+        data['abstract'] = fetched_data['abstract']
+
+        conn.commit()
+        conn.close()
+
+        return data
+
 
 def main():
     """
@@ -112,3 +140,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
