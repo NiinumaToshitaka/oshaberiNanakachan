@@ -2,9 +2,9 @@
 """
 
 
-import transcribe_streaming_mic as voice2text
-import playVoice as playVoice
-import getState as getState
+import src.transcribe_streaming_mic as voice2text
+import src.playVoice as playVoice
+import src.getState as getState
 
 
 def main():
