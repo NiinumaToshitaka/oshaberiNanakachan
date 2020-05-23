@@ -1,9 +1,11 @@
 import subprocess
 import random
-import requestToVoiceText as requestToVoiceText
-import dbAccess as dbAccess
 import datetime
 import time
+import os
+import src.requestToVoiceText as requestToVoiceText
+import src.dbAccess as dbAccess
+import src.nanakapedia.WikipediaAbstractDbAccess as WikipediaDB
 
 
 voiceDataDir = "../voice/{}.wav"
@@ -17,6 +19,11 @@ voiceDataFiles = {
     "weather": ["天気予報"],
     "badWeather": ["傘を持つのを忘れないでくださいね"],
     "failedToGetWeatherData": ["ごめんなさい、天気情報を取得できませんでした"],
+    "askHasKnownTheWikipediaTitle": ["ねえ、お父様"],
+    "KnowTheWikipediaTitle": ["さすが、お父様は物知りですね"],
+    "WikipediaTitle": ["wikipedia_title"],
+    "WikipediaAbstract": ["wikipedia_abstract"],
+    "DoNotKnowTheWikipediaTitle": ["またひとつ賢くなりましたね"],
 }
 """状態ごとの音声ファイル一覧"""
 bad_weather = ['雨', '雪']
@@ -33,6 +40,11 @@ def play_voice_file(voice_file_path: str) -> None:
         None
 
     """
+
+    # 音声ファイルが存在しない場合は新たに音声を合成する
+    if not os.path.exists(voice_file_path):
+        requestToVoiceText.VoiceText().set_text(os.path.splitext(os.path.basename(voice_file_path))[0]).request_to_voice_text()
+
     wait_time_after_play = 0.5
     """音声ファイル再生後に待つ時間。音声ファイルを連続して再生すると不自然につながってしまうので間を置く"""
     command = "aplay " + voice_file_path
@@ -76,7 +88,6 @@ def play_voice(state: str) -> None:
             voice_file = get_voice_file_path("weather")
         else:
             voice_file = get_voice_file_path("failedToGetWeatherData")
-            pass
     elif state is "weather_tomorrow":
         if get_weather_forecast_voice(datetime.datetime.now() + datetime.timedelta(days=1)):
             voice_file = get_voice_file_path("weather")
@@ -134,10 +145,83 @@ def get_weather_forecast_voice(date: datetime.datetime) -> bool:
         weather_voice_base_string += "最高気温は{}度、最低気温は{}度です。".format(weather_forecast_data['temp_max'], weather_forecast_data['temp_min'])
 
     # 天気予報データを読み上げるボイスを合成
-    requestToVoiceText.VoiceText().set_text(weather_voice_base_string).request_to_voice_text(random.choice(voiceDataFiles["weather"]))
+    requestToVoiceText.VoiceText().set_text(weather_voice_base_string).request_to_voice_text(get_voice_file_path("weather"))
 
     return True
 
 
-if __name__ == '__main__':
+class Nanakapedia:
+    """七香ぺでぃあの音声出力を扱うクラス
+    """
+
+    def __init__(self):
+        """要約データの初期設定
+        """
+        self.abstract = WikipediaDB.WikipediaAbstract().get_random_abstract_from_db()
+        self.has_known_the_title = False
+
+    def get_new_abstract(self):
+        """新たな要約データを取得する
+
+        Returns:
+            Nanakapedia
+        """
+        self.abstract = WikipediaDB.WikipediaAbstract().get_random_abstract_from_db()
+        self.has_known_the_title = False
+        return self
+
+    def set_has_known_the_title(self, has_known_the_title: bool):
+        """タイトルを知っているか否かを設定
+
+        Returns:
+            Nanakapedia
+        """
+        self.has_known_the_title = has_known_the_title
+        return self
+
+    def ask_does_know_the_title(self):
+        """タイトルを知っているか尋ねる
+        """
+        play_voice_file(get_voice_file_path("askHasKnownTheWikipediaTitle"))
+        wikipedia_title_voice_string = self.abstract['title'] + "って知ってますか？"
+        """タイトルを読み上げるテキスト"""
+        # テキストから音声を合成
+        requestToVoiceText.VoiceText().set_text(wikipedia_title_voice_string).request_to_voice_text(voiceDataFiles["WikipediaTitle"][0])
+        # タイトルを読み上げる音声を再生
+        play_voice_file(get_voice_file_path("WikipediaTitle"))
+
+    def play_the_ask_result(self):
+        """タイトルを知っているか尋ねた結果に応答する"""
+        # タイトルを知っている場合
+        if self.has_known_the_title:
+            play_voice_file(get_voice_file_path("KnowTheWikipediaTitle"))
+        # タイトルを知らない場合
+        else:
+            wikipedia_abstract_voice_string = self.abstract['title'] + "とは、" + self.abstract['abstract'] + "だそうです"
+            """要約文を読み上げるテキスト"""
+            # テキストから音声を合成
+            requestToVoiceText.VoiceText().set_text(wikipedia_abstract_voice_string).request_to_voice_text(voiceDataFiles["WikipediaAbstract"][0])
+            # 要約文を読み上げる音声を再生
+            play_voice_file(get_voice_file_path("WikipediaAbstract"))
+
+
+def test():
+    # 明日の天気を読み上げる
     play_voice("weather_tomorrow")
+    # 存在しない音声ファイルを再生しようとすると、新たに音声を合成して再生する
+    play_voice_file(voiceDataDir.format("fuga"))
+
+    np = Nanakapedia()
+    # Wikipedia要約データのタイトルを知らない場合
+    np.ask_does_know_the_title()
+    np.set_has_known_the_title(False)
+    np.play_the_ask_result()
+
+    # Wikipedia要約データのタイトルを知っている場合
+    np.ask_does_know_the_title()
+    np.set_has_known_the_title(True)
+    np.play_the_ask_result()
+
+
+if __name__ == '__main__':
+    test()

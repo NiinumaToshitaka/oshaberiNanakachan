@@ -14,8 +14,6 @@ class VoiceText:
     DEFAULT_PARAMETER = {
         'speaker': 'hikari',
         'format': 'wav',
-        'emotion': 'happiness',
-        'emotion_level': 2,
         'pitch': 120,
         'speed': 100,
         'volume': 100,
