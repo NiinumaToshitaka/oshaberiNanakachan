@@ -1,7 +1,7 @@
 import difflib
 
 
-class GetState:
+class State:
     """状態を扱うクラス
     """
 
@@ -34,17 +34,17 @@ class GetState:
             self.state (str): 入力メッセージに対応する状態名
         """
 
-        closest_state = max(GetState.STATES.items(), key=lambda x: difflib.SequenceMatcher(None, input_message, x[1]).ratio())
+        closest_state = max(State.STATES.items(), key=lambda x: difflib.SequenceMatcher(None, input_message, x[1]).ratio())
         matching_ratio = difflib.SequenceMatcher(None, input_message, closest_state[1]).ratio()
         print("matching_ratio: {:.2f}".format(matching_ratio))
-        if matching_ratio > GetState.MIN_MATCHING_RATIO:
+        if matching_ratio > State.MIN_MATCHING_RATIO:
             self.state = closest_state[0]
 
         return self.state
 
 
 def test():
-    print("state: {}".format(GetState().get_state("知らない")))
+    print("state: {}".format(State().get_state("知らない")))
 
 
 if __name__ == '__main__':

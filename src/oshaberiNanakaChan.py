@@ -4,13 +4,13 @@
 
 import src.transcribe_streaming_mic as voice2text
 import src.playVoice as playVoice
-import src.getState as getState
+import src.State as State
 
 
 def main():
     text = voice2text.listen()
     print("input_message: " + text)
-    state = getState.GetState().get_state(text)
+    state = State.State().get_state(text)
     print("state: " + state)
     playVoice.play_voice(state)
 
@@ -29,7 +29,7 @@ def do_nanakapedia():
     print("input_message: " + text)
 
     # 入力された音声に対応する状態を取得
-    np_state = getState.GetState()
+    np_state = State.State()
     np_state.get_state(text)
     print("state: " + np_state.state)
 
