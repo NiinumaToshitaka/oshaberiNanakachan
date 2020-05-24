@@ -93,9 +93,17 @@ class State:
             self.state (str): 入力メッセージに対応する状態名
         """
 
-        closest_state = max(State.STATES.items(), key=lambda x: difflib.SequenceMatcher(None, input_message, x[1]).ratio())
-        matching_ratio = difflib.SequenceMatcher(None, input_message, closest_state[1]).ratio()
+        # 入力メッセージを持つ状態のリストを取得
+        tmp_states = [x for x in State.STATES.items() if "input_message" in x[1].keys()]
+
+        # 入力メッセージに最も近い状態を取得
+        closest_state = max(tmp_states, key=lambda x: difflib.SequenceMatcher(None, input_message, x[1]["input_message"]).ratio())
+        # 入力メッセージと規定コマンドの類似度を計算
+        matching_ratio = difflib.SequenceMatcher(None, input_message, closest_state[1]["input_message"]).ratio()
+        print("input_message: {}".format(input_message))
         print("matching_ratio: {:.2f}".format(matching_ratio))
+
+        # 類似度が規定値以上の場合は現在の状態を更新
         if matching_ratio > State.MIN_MATCHING_RATIO:
             self.state = closest_state[0]
 
@@ -103,7 +111,7 @@ class State:
 
 
 def test():
-    print("state: {}".format(State().get_state("知らない")))
+    print("state: {}".format(State().get_state("知ってるー")))
 
 
 if __name__ == '__main__':
