@@ -3,9 +3,9 @@
 """
 
 import sqlite3
-import getWeatherData as getWeatherData
 import datetime
 import os
+import src.getWeatherData as getWeatherData
 
 
 db_path = 'weather.db'
@@ -69,10 +69,11 @@ def get_weather_forecast_from_db(date: datetime.datetime) -> dict:
     # 取得した天気予報データを格納
     data = {}
     fetched_data = c.fetchone()
-    data['date'] = fetched_data['date']
-    data['telop'] = fetched_data['telop']
-    data['temp_max'] = fetched_data['temp_max']
-    data['temp_min'] = fetched_data['temp_min']
+    if fetched_data is not None:
+        data['date'] = fetched_data['date']
+        data['telop'] = fetched_data['telop']
+        data['temp_max'] = fetched_data['temp_max']
+        data['temp_min'] = fetched_data['temp_min']
 
     conn.commit()
     conn.close()

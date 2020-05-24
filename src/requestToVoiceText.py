@@ -1,4 +1,4 @@
-import VoiceTextWebAPIKey as Key
+import src.VoiceTextWebAPIKey as Key
 import requests
 
 
@@ -14,8 +14,6 @@ class VoiceText:
     DEFAULT_PARAMETER = {
         'speaker': 'hikari',
         'format': 'wav',
-        'emotion': 'happiness',
-        'emotion_level': 2,
         'pitch': 120,
         'speed': 100,
         'volume': 100,
@@ -152,17 +150,24 @@ class VoiceText:
             self.parameter['volume'] = volume
         return self
 
-    def request_to_voice_text(self) -> None:
+    def request_to_voice_text(self, save_file_path=None) -> None:
         """リクエストパラメータを基に音声を合成する。
+
+        Args:
+            save_file_path (str): 保存ファイル名
 
         Returns:
             None
         """
 
+        # 保存ファイル名が指定されていない場合は、テキストをファイル名とする
+        if save_file_path is None:
+            save_file_path = OBTAINED_VOICE_SAVE_PATH.format(self.parameter['text'])
+
         response = requests.post(VoiceText.requestURL, data=self.parameter, auth=(Key.API_KEY, ''))
 
         if response.status_code is requests.codes.ok:
-            with open(OBTAINED_VOICE_SAVE_PATH.format(self.parameter['text']), 'wb') as f:
+            with open(save_file_path, 'wb') as f:
                 f.write(response.content)
                 print("finish voice download.")
         else:

@@ -14,7 +14,7 @@ class WikipediaAbstract:
     Wikipedia要約データを扱うクラス
     """
 
-    DB_PATH = 'wikipedia_abstract.db'
+    DB_PATH = 'nanakapedia/wikipedia_abstract.db'
     """Wikipedia要約データベースのファイルパス"""
     TABLE_NAME = 'abstract'
     """Wikipedia要約データテーブル名"""
