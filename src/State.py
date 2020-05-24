@@ -7,17 +7,76 @@ class State:
 
     MIN_MATCHING_RATIO = 0.75
     """入力メッセージと規定コマンドの最小類似度。もっとも類似度の高い規定コマンドの類似度がこの値以下の場合は認識不能とする。"""
+
     STATES = {
-        "morning": "おはよう",
-        "go_out": "行ってきます",
-        "back": "ただいま",
-        "night": "おやすみ",
-        "weather_today": "今日の天気は",
-        "weather_tomorrow": "明日の天気は",
-        "KnowTheWikipediaTitle": "知ってる",
-        "DoNotKnowTheWikipediaTitle": "知らない",
+        "unknown":
+            {
+                "voice_data_file": ["ごめんなさい、ちょっとよくわかりません"],
+            },
+        "morning":
+            {
+                "input_message": "おはよう",
+                "voice_data_file": ["おはようございます"],
+            },
+        "go_out":
+            {
+                "input_message": "行ってきます",
+                "voice_data_file": ["今日もお仕事頑張ってきてください", "行ってらっしゃい"],
+            },
+        "back":
+            {
+                "input_message": "ただいま",
+                "voice_data_file": ["おかえりなさい"],
+            },
+        "night":
+            {
+                "input_message": "おやすみ",
+                "voice_data_file": ["おやすみなさい"],
+            },
+        "weather":
+            {
+                "voice_data_file": ["天気予報"],
+            },
+        "badWeather":
+            {
+                "voice_data_file": ["傘を持つのを忘れないでくださいね"],
+            },
+        "failedToGetWeatherData":
+            {
+                "voice_data_file": ["ごめんなさい、天気情報を取得できませんでした"],
+            },
+        "weather_today":
+            {
+                "input_message": "今日の天気は",
+            },
+        "weather_tomorrow":
+            {
+                "input_message": "明日の天気は",
+            },
+        "askHasKnownTheWikipediaTitle":
+            {
+                "voice_data_file": ["ねえ、お父様"],
+            },
+        "KnowTheWikipediaTitle":
+            {
+                "input_message": "知ってる",
+                "voice_data_file": ["さすが、お父様は物知りですね"],
+            },
+        "DoNotKnowTheWikipediaTitle":
+            {
+                "input_message": "知らない",
+                "voice_data_file": ["またひとつ賢くなりましたね"],
+            },
+        "WikipediaTitle":
+            {
+                "voice_data_file": ["wikipedia_title"],
+            },
+        "WikipediaAbstract":
+            {
+                "voice_data_file": ["wikipedia_abstract"],
+            },
     }
-    """状態名とコマンドの対応一覧"""
+    """状態一覧"""
 
     def __init__(self):
         self.state = "unknown"
