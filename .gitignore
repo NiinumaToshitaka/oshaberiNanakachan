@@ -17,3 +17,4 @@
 
 # temporary files
 __pycache__/
+/src/chat/ChaplusAPIKey.py
