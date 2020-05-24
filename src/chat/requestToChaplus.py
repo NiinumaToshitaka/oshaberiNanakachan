@@ -136,9 +136,13 @@ class Chaplus:
         """最もスコアの高い応答文を取得する
 
         Returns:
-            (str): 最もスコアの高い応答文
+            (str): 最もスコアの高い応答文。応答文を取得できなかった場合は空の文字列を返す。
         """
-        return self.response_body["bestResponse"]["utterance"].rstrip()
+        if self.response_body is None:
+            return ""
+        else:
+            # 応答文に改行文字が入っているので削除する
+            return self.response_body["bestResponse"]["utterance"].rstrip()
 
 
 def test():
@@ -151,6 +155,8 @@ def test():
     chaplus.set_utterance(input_message)
     print("chaplus.parameter (after setting)")
     pprint(chaplus.parameter)
+    best_response = chaplus.get_best_response()
+    print("best_response before request: {}".format(best_response))
     best_response = chaplus.request_to_chaplus().get_best_response()
     print("best_response: {}".format(best_response))
 
