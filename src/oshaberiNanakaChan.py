@@ -33,17 +33,8 @@ def do_nanakapedia():
     np_state.get_state(text)
     print("state: " + np_state.state)
 
-    # タイトルを知っている場合
-    if np_state.state == "KnowTheWikipediaTitle":
-        np.has_known_the_title = True
-        np.play_the_ask_result()
-    # タイトルを知らない場合
-    elif np_state.state == "DoNotKnowTheWikipediaTitle":
-        np.has_known_the_title = False
-        np.play_the_ask_result()
-    # 状態を判定できなかった場合
-    else:
-        playVoice.play_voice(np_state.state)
+    np.set_has_known_the_title(np_state.state)
+    np.play_the_ask_result()
 
 
 if __name__ == '__main__':

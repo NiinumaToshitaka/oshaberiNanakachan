@@ -3,6 +3,7 @@ import random
 import datetime
 import time
 import os
+from enum import Enum, auto
 import src.requestToVoiceText as requestToVoiceText
 import src.dbAccess as dbAccess
 import src.nanakapedia.WikipediaAbstractDbAccess as WikipediaDB
@@ -15,6 +16,14 @@ voiceDataDir = "../voice/{}.wav"
 """状態ごとの音声ファイル一覧"""
 bad_weather = ['雨', '雪']
 """悪い天気を表すテキスト"""
+
+
+class HasKnown(Enum):
+    """知っているか否かを表すクラス
+    """
+    true = auto()
+    false = auto()
+    unknown = auto()
 
 
 def play_voice_file(voice_file_path: str) -> None:
@@ -146,7 +155,7 @@ class Nanakapedia:
         """要約データの初期設定
         """
         self.abstract = WikipediaDB.WikipediaAbstract().get_random_abstract_from_db()
-        self.has_known_the_title = False
+        self.has_known_the_title = HasKnown.false
 
     def get_new_abstract(self):
         """新たな要約データを取得する
@@ -154,17 +163,26 @@ class Nanakapedia:
         Returns:
             Nanakapedia
         """
-        self.abstract = WikipediaDB.WikipediaAbstract().get_random_abstract_from_db()
-        self.has_known_the_title = False
+        self.abstract: dict = WikipediaDB.WikipediaAbstract().get_random_abstract_from_db()
+        self.has_known_the_title: bool = HasKnown.false
         return self
 
-    def set_has_known_the_title(self, has_known_the_title: bool):
+    def set_has_known_the_title(self, state: str):
         """タイトルを知っているか否かを設定
+
+        Args:
+            state (str): 状態名
 
         Returns:
             Nanakapedia
         """
-        self.has_known_the_title = has_known_the_title
+
+        if "KnowTheWikipediaTitle" == state:
+            self.has_known_the_title = HasKnown.true
+        elif "DoNotKnowTheWikipediaTitle" == state:
+            self.has_known_the_title = HasKnown.false
+        else:
+            self.has_known_the_title = HasKnown.unknown
         return self
 
     def ask_does_know_the_title(self):
@@ -179,12 +197,13 @@ class Nanakapedia:
         play_voice_file(get_voice_file_path("WikipediaTitle"))
 
     def play_the_ask_result(self):
-        """タイトルを知っているか尋ねた結果に応答する"""
+        """タイトルを知っているか尋ねた結果に応答する
+        """
         # タイトルを知っている場合
-        if self.has_known_the_title:
+        if HasKnown.true == self.has_known_the_title:
             play_voice_file(get_voice_file_path("KnowTheWikipediaTitle"))
         # タイトルを知らない場合
-        else:
+        elif HasKnown.false == self.has_known_the_title:
             wikipedia_abstract_voice_string = self.abstract['title'] + "とは、" + self.abstract['abstract'] + "だそうです"
             """要約文を読み上げるテキスト"""
             # テキストから音声を合成
@@ -192,6 +211,9 @@ class Nanakapedia:
             # 要約文を読み上げる音声を再生
             play_voice_file(get_voice_file_path("WikipediaAbstract"))
             play_voice_file(get_voice_file_path("DoNotKnowTheWikipediaTitle"))
+        # 判定できない場合
+        else:
+            play_voice("unknown")
 
 
 def test():
@@ -203,12 +225,12 @@ def test():
     np = Nanakapedia()
     # Wikipedia要約データのタイトルを知らない場合
     np.ask_does_know_the_title()
-    np.set_has_known_the_title(False)
+    np.set_has_known_the_title("DoNotKnowTheWikipediaTitle")
     np.play_the_ask_result()
 
     # Wikipedia要約データのタイトルを知っている場合
     np.ask_does_know_the_title()
-    np.set_has_known_the_title(True)
+    np.set_has_known_the_title("KnowTheWikipediaTitle")
     np.play_the_ask_result()
 
     # 状態に対応する音声を再生することをチェック
