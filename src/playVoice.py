@@ -39,7 +39,8 @@ def play_voice_file(voice_file_path: str) -> None:
 
     # 音声ファイルが存在しない場合は新たに音声を合成する
     if not os.path.exists(voice_file_path):
-        requestToVoiceText.VoiceText().set_text(os.path.splitext(os.path.basename(voice_file_path))[0]).request_to_voice_text()
+        requestToVoiceText.VoiceText().set_text(
+            os.path.splitext(os.path.basename(voice_file_path))[0]).request_to_voice_text()
 
     wait_time_after_play = 0.5
     """音声ファイル再生後に待つ時間。音声ファイルを連続して再生すると不自然につながってしまうので間を置く"""
@@ -76,12 +77,12 @@ def play_voice(state: str) -> None:
     """再生する音声ファイルのパス"""
 
     # 天気予報を読み上げる音声ファイルを取得
-    if state is "weather_today":
+    if state == "weather_today":
         if get_weather_forecast_voice(datetime.datetime.now()):
             voice_file = get_voice_file_path("weather")
         else:
             voice_file = get_voice_file_path("failedToGetWeatherData")
-    elif state is "weather_tomorrow":
+    elif state == "weather_tomorrow":
         if get_weather_forecast_voice(datetime.datetime.now() + datetime.timedelta(days=1)):
             voice_file = get_voice_file_path("weather")
         else:
@@ -95,7 +96,7 @@ def play_voice(state: str) -> None:
     play_voice_file(voice_file)
 
     # 悪い予報のときは外出時に傘を持つよう警告する
-    if state is "go_out":
+    if state == "go_out":
         weather_forecast_data = dbAccess.get_weather_forecast_from_db(datetime.datetime.now())
         is_bad_weather = False
         for weather in bad_weather:
@@ -139,10 +140,12 @@ def get_weather_forecast_voice(date: datetime.datetime) -> bool:
     weather_voice_base_string += "{}です。".format(weather_forecast_data['telop'])
     # 温度データが存在する場合は温度データテキストを作成
     if weather_forecast_data['temp_max'] is not None and weather_forecast_data['temp_min'] is not None:
-        weather_voice_base_string += "最高気温は{}度、最低気温は{}度です。".format(weather_forecast_data['temp_max'], weather_forecast_data['temp_min'])
+        weather_voice_base_string += "最高気温は{}度、最低気温は{}度です。".format(weather_forecast_data['temp_max'],
+                                                                   weather_forecast_data['temp_min'])
 
     # 天気予報データを読み上げるボイスを合成
-    requestToVoiceText.VoiceText().set_text(weather_voice_base_string).request_to_voice_text(get_voice_file_path("weather"))
+    requestToVoiceText.VoiceText().set_text(weather_voice_base_string).request_to_voice_text(
+        get_voice_file_path("weather"))
 
     return True
 
@@ -192,7 +195,8 @@ class Nanakapedia:
         wikipedia_title_voice_string = self.abstract['title'] + "って知ってますか？"
         """タイトルを読み上げるテキスト"""
         # テキストから音声を合成
-        requestToVoiceText.VoiceText().set_text(wikipedia_title_voice_string).request_to_voice_text(get_voice_file_path("WikipediaTitle"))
+        requestToVoiceText.VoiceText().set_text(wikipedia_title_voice_string).request_to_voice_text(
+            get_voice_file_path("WikipediaTitle"))
         # タイトルを読み上げる音声を再生
         play_voice_file(get_voice_file_path("WikipediaTitle"))
 
@@ -207,7 +211,8 @@ class Nanakapedia:
             wikipedia_abstract_voice_string = self.abstract['title'] + "とは、" + self.abstract['abstract'] + "だそうです"
             """要約文を読み上げるテキスト"""
             # テキストから音声を合成
-            requestToVoiceText.VoiceText().set_text(wikipedia_abstract_voice_string).request_to_voice_text(get_voice_file_path("WikipediaAbstract"))
+            requestToVoiceText.VoiceText().set_text(wikipedia_abstract_voice_string).request_to_voice_text(
+                get_voice_file_path("WikipediaAbstract"))
             # 要約文を読み上げる音声を再生
             play_voice_file(get_voice_file_path("WikipediaAbstract"))
             play_voice_file(get_voice_file_path("DoNotKnowTheWikipediaTitle"))
