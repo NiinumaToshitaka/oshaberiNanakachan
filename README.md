@@ -57,6 +57,8 @@
   * [お天気Webサービス仕様](http://weather.livedoor.com/weather_hacks/webservice)
 * [codama](https://codama.ux-xu.com/)
   * [使い方Wiki](https://github.com/YUKAI/codama-doc-r0/wiki)
+* [Chaplus](https://www.chaplus.jp/)
+  * [Chaplus API β | chaplus-api-doc](https://k-masashi.github.io/chaplus-api-doc/)
 
 ## 環境構築
 
@@ -251,3 +253,7 @@ PythonでGCPを使うためのパッケージとGCPの管理用コマンドで�
     ├── 傘を持つのを忘れないでくださいね.wav
     └── 天気予報.wav
 ```
+
+## 参考資料
+
+* [Raspberry Pi で GPIO - 離島プログラマの雑記](https://ag.hatenablog.com/entry/2015/07/31/013013)
