@@ -8,6 +8,7 @@ import requestToVoiceText as requestToVoiceText
 import dbAccess as dbAccess
 import nanakapedia.WikipediaAbstractDbAccess as WikipediaDB
 import State as State
+import chat.requestToChaplus as requestToChaplus
 
 
 voiceDataDir = "../voice/{}.wav"
@@ -150,6 +151,99 @@ def get_weather_forecast_voice(date: datetime.datetime) -> bool:
     return True
 
 
+class PlayResponseVoice:
+    def __init__(self, input_message: str):
+        self.input_message = input_message
+        self.state = State.State().get_state(self.input_message)
+        self.voice_file = get_voice_file_path("unknown")
+        """再生する音声ファイルのパス"""
+        print("state: " + self.state)
+
+    def play_response_voice(self) -> None:
+        """入力メッセージへの応答音声を設定する。
+
+        Returns:
+            None
+        """
+
+        if self.state == "unknown":
+            chaplus = requestToChaplus.Chaplus()
+            chaplus.set_utterance(self.input_message)
+            best_response = chaplus.request_to_chaplus().get_best_response()
+            print("best_response: " + best_response)
+            if best_response != "":
+                self.state = "chat_response"
+                requestToVoiceText.VoiceText().set_text(best_response).request_to_voice_text(
+                    get_voice_file_path("chat_response"))
+                self.voice_file = get_voice_file_path("chat_response")
+            self.play_voice_file()
+            return self
+
+        # 天気予報を読み上げる音声ファイルを取得
+        if self.state == "weather_today":
+            if get_weather_forecast_voice(datetime.datetime.now()):
+                self.voice_file = get_voice_file_path("weather")
+            else:
+                self.voice_file = get_voice_file_path("failedToGetWeatherData")
+        elif self.state == "weather_tomorrow":
+            if get_weather_forecast_voice(datetime.datetime.now() + datetime.timedelta(days=1)):
+                self.voice_file = get_voice_file_path("weather")
+            else:
+                self.voice_file = get_voice_file_path("failedToGetWeatherData")
+
+        # 現在の状態に対応する音声ファイルを取得
+        elif self.state in State.State.STATES.keys():
+            # リストからランダムに音声を指定
+            self.voice_file = get_voice_file_path(self.state)
+
+        # 音声を再生
+        self.play_voice_file()
+
+        # 悪い予報のときは外出時に傘を持つよう警告する
+        if self.state == "go_out":
+            self.play_response_voice_in_bad_weather()
+
+        return self
+
+    def play_voice_file(self) -> None:
+        """音声ファイルを再生する。
+        Returns:
+            None
+
+        """
+
+        print("state: ", self.state)
+
+        # 音声ファイルが存在しない場合は新たに音声を合成する
+        if not os.path.exists(self.voice_file):
+            requestToVoiceText.VoiceText().set_text(
+                os.path.splitext(os.path.basename(self.voice_file))[0]).request_to_voice_text()
+
+        wait_seconds_after_play = 0.5
+        """音声ファイル再生後に待つ時間（秒）。音声ファイルを連続して再生すると不自然につながってしまうので間を置く"""
+        command = "aplay " + self.voice_file
+        subprocess.call(command, shell=True)
+        time.sleep(wait_seconds_after_play)
+
+        return self
+
+    def play_response_voice_in_bad_weather(self) -> None:
+        # 天気予報データを取得
+        weather_forecast_data = dbAccess.get_weather_forecast_from_db(datetime.datetime.now())
+        # 天気予報データが空のときは何もしない
+        if len(weather_forecast_data) == 0:
+            return self
+        # 悪天候の場合は音声ファイルを再生
+        is_bad_weather = False
+        for weather in bad_weather:
+            if weather in weather_forecast_data['telop']:
+                is_bad_weather = True
+        if is_bad_weather:
+            play_voice_file(get_voice_file_path("badWeather"))
+
+        return self
+
+
 class Nanakapedia:
     """七香ぺでぃあの音声出力を扱うクラス
     """
@@ -244,4 +338,5 @@ def test():
 
 
 if __name__ == '__main__':
-    test()
+    # test()
+    PlayResponseVoice("今日もかわいいね").play_response_voice()

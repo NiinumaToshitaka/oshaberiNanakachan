@@ -13,6 +13,10 @@ class State:
             {
                 "voice_data_file": ["ごめんなさい、ちょっとよくわかりません"],
             },
+        "chat_response":
+            {
+                "voice_data_file": ["chat_response"],
+            },
         "morning":
             {
                 "input_message": "おはよう",
