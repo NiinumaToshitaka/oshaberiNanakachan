@@ -43,49 +43,9 @@
 
 | Name | Version | Comment |
 |:---|:---|:---|
-| Python | 3.6.9 | |
-| SQLite | 3.22.0 | 天気予報データベースに使用 |
-| aplay | 1.1.3 | 音声再生ツール |
-
-### gcloudツール
-
-| Name | Version | Comment |
-|:---|:---|:---|
-| Google Cloud SDK | 288.0.0 | |
-| alpha | 2020.04.03 | |
-| beta | 2020.04.03 | |
-| bq | 2.0.56 | |
-| core | 2020.04.03 | |
-| gsutil | 4.49 | |
-| kubectl | 2020.04.03 | |
-
-### Pythonライブラリ
-
-| Name | Version | Comment |
-|:---|:---|:---|
-| cachetools | 4.0.0 | |
-| certifi | 2019.11.28 | |
-| chardet | 3.0.4 | |
-| google-api-core | 1.16.0 | |
-| google-auth | 1.13.1 | |
-| google-cloud-core | 1.3.0 | |
-| google-cloud-speech | 1.3.2 | |
-| google-cloud-storage | 1.27.0 | |
-| google-resumable-media | 0.5.0 | |
-| googleapis-common-protos | 1.51.0 | |
-| grpcio | 1.28.1 | |
-| idna | 2.9 | |
-| pip | 20.0.2 | |
-| pkg-resources | 0.0.0 | |
-| protobuf | 3.11.3 | |
-| pyasn1 | 0.4.8 | |
-| pyasn1-modules | 0.2.8 | |
-| pytz | 2019.3 | |
-| requests | 2.23.0 | |
-| rsa | 4.0 | |
-| setuptools | 46.1.3 | |
-| six | 1.14.0 | |
-| urllib3 | 1.25.8 | |
+| Python | >=3.6.9 ||
+| SQLite || 天気予報データベースに使用。必須ではないが、データベースの内容を確認するためにあったほうがよい。 |
+| aplay || 音声再生ツール |
 
 ### 利用している外部サービス
 
@@ -95,16 +55,150 @@
   * [APIマニュアル](https://cloud.voicetext.jp/webapi/docs/api)
 * [Weather Hacks お天気Webサービス](http://weather.livedoor.com/weather_hacks)
   * [お天気Webサービス仕様](http://weather.livedoor.com/weather_hacks/webservice)
+* [codama](https://codama.ux-xu.com/)
+  * [使い方Wiki](https://github.com/YUKAI/codama-doc-r0/wiki)
 
 ## 環境構築
 
-### 参考
+### Raspberry Pi
 
-PythonとGoogle Cloud Platformまわり。
+#### OS
+
+[codama](#codama)の章を参照。
+
+#### 音声を再生できない場合
+
+`/boot/config.txt`に`dtparam=audio=on`を追記する。すでに項目が存在していてコメントアウトされている場合はコメントアウトを外す。その後再起動。
+
+[参考] [とりあえずこれだけ知っておけばなんとかなるRaspberry Piのオーディオ設定 - mattintosh note](https://mattintosh.hatenablog.com/entry/20161031/1477918411)
+
+スピーカー出力を試す: `aplay /usr/share/sounds/alsa/Front_Center.wav`
+
+`そのようなデバイスはありません`というエラーが発生する場合、`aplay -l`で出力デバイスがどのカードにあるか確認する。
+確認した内容に従い、`~/.asoundrc`に以下を追記。
+
+```txt
+defaluts.pcm.card [カード番号]
+
+pcm.!default {
+  type hw
+  card [カード番号]
+}
+```
+
+その後`sudo /etc/init.d/alsa-utils restart`でalsa-utilsを再起動する。
+
+[参考] [Raspberry Piで音声認識 - Qiita](https://qiita.com/t_oginogin/items/f0ba9d2eb622c05558f4)
+
+### Python
+
+#### pyenvによるPythonインストール
+
+pyenvのインストール
+
+`git clone https://github.com/yyuu/pyenv.git ~/.pyenv`
+
+~/.bashrcに追記
+
+```bash
+export PYENV_ROOT=$HOME/.pyenv
+export PATH=$PYENV_ROOT/bin:$PATH
+eval "$(pyenv init -)"
+```
+
+`source ~/.bashrc`で反映
+
+Pythonのコンパイルに必要なライブラリとパッケージのインストール
+
+`sudo apt install build-essential tk-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libssl-dev libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev libffi-dev tar wget vim`
+
+`pyenv install [Pythonバージョン]`でPythonインストール。
+ここではバージョン3.8.3をインストールするので`pyenv install 3.8.3`
+
+全ディレクトリで使用するPythonの切り替え
+
+`pyenv global 3.8.3`
+
+#### Pipenvによる仮想環境作成
+
+* Pipenvのインストール: `pip install pipenv`
+* 仮想環境に入る: `pipenv shell`
+* 仮想環境を出る: `exit`
+
+#### Pipenvによるライブラリのインストール
+
+```bash
+sudo apt install portaudio19-dev python3-pyaudio
+pipenv install
+```
+
+### codama
+
+2020年6月13日時点で、Raspberry Pi OS Release:2020-05-27版では設定用スクリプトの実行中にエラーが発生した。
+カーネルのバージョンが新しくなったために、設定用スクリプトの中でビルドを行ったときに失敗する模様。
+
+下記リンクのRelease:2019-04-09版のRaspbianを使用した場合は失敗しないことを確認したので、これを使用すること。
+
+[Index of /raspbian/images/raspbian-2019-04-09](http://downloads.raspberrypi.org/raspbian/images/raspbian-2019-04-09/)
+
+設定用スクリプト実行時は、以下の手順で実施する。
+なお、本手順は下記ページを参考にした。
+
+* [Codama, raspberrypi-kernel 1.20190517-1での問題 - ＠SRCHACK.ORG（えす・あーる・しー・はっく）](https://www.srchack.org/article.php?story=20190621143434315)
+
+作業にあたり、**以下のコマンドは絶対に実行してはならない。**
+カーネルがアップグレードされてしまい、設定用スクリプトを実行できなくなる。
+
+`sudo apt-get install --reinstall raspberrypi-bootloader raspberrypi-kernel`
+
+1. kernelが1.20190401-1までのバージョンであることを確認する
+
+    ```bash
+    dpkg -l | grep raspberrypi-kernel
+    ```
+
+2. kernelとheaderのバージョンを固定する
+
+    ```bash
+    echo "raspberrypi-kernel hold" | sudo dpkg --set-selections
+    sudo apt-get install raspberrypi-kernel-headers
+    echo "raspberrypi-kernel-headers hold" | sudo dpkg --set-selections
+    ```
+
+   ただし、`apt-get install raspberrypi-kernel`のように明示的にアップグレードを指示した場合は実行されてしまうため、***実行してはならない。***
+
+3. kernelとheaderのバージョンが、どちらも1.20190401-1までのバージョンであること、かつ同じバージョンであることを確認する
+
+    ```bash
+    dpkg -l | grep raspberrypi-kernel
+    hi  raspberrypi-kernel          1.20190401-1    armhf   Raspberry Pi bootloader
+    hi  raspberrypi-kernel-headers  1.20190401-1    armhf   Header files for the Raspberry Pi Linux kernel
+    ```
+
+4. バージョンが固定されていることを確認する
+
+   ```bash
+   dpkg --get-selections | grep raspberrypi-kernel
+   raspberrypi-kernel           hold
+   raspberrypi-kernel-headers   hold
+   ```
+
+5. 通常の手順でcodamaの設定を行う
+
+[Home · YUKAI/codama-doc-r0 Wiki · GitHub](https://github.com/YUKAI/codama-doc-r0/wiki)
+
+### その他参考資料
+
+PythonとGoogle Cloud Platform(GCP)まわり。
+
+PythonでGCPを使うためのパッケージとGCPの管理用コマンドである`gcloud`を使用可能にする。
+
+以下を参考にがんばる。
 
 * [Python > ガイド > Setting up a Python development environment](https://cloud.google.com/python/setup)
 * [Developer Tools > Cloud SDK: コマンドライン インターフェース > ドキュメント > Debian と Ubuntu 用のクイックスタート](https://cloud.google.com/sdk/docs/quickstart-debian-ubuntu)
 * [Storage Products > Cloud Storage > ドキュメント > リファレンス > Cloud Storage Client Libraries](https://cloud.google.com/storage/docs/reference/libraries)
+* [Speech-to-Text ドキュメント | Google Cloud](https://cloud.google.com/speech-to-text/docs?hl=ja)
 
 ## 仕様
 
