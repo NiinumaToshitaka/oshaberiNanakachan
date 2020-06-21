@@ -4,7 +4,7 @@
 import requests
 import json
 from pprint import pprint
-import src.chat.ChaplusAPIKey as Key
+import chat.ChaplusAPIKey as Key
 
 
 class Chaplus:

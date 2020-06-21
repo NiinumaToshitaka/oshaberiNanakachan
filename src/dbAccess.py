@@ -5,7 +5,7 @@
 import sqlite3
 import datetime
 import os
-import src.getWeatherData as getWeatherData
+import getWeatherData as getWeatherData
 
 
 db_path = 'weather.db'
@@ -34,12 +34,7 @@ def set_weather_forecast_to_db(weather_data: list) -> None:
     # データベースに天気予報データを登録
     for data in weather_data:
         c.execute("INSERT INTO {} VALUES (?,?,?,?)".format(table_name), (
-                    data['date'],
-                    data['telop'],
-                    data['temp_max'],
-                    data['temp_min']
-                )
-            )
+            data['date'], data['telop'], data['temp_max'], data['temp_min']))
 
     conn.commit()
     conn.close()

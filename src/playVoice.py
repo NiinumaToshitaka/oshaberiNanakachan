@@ -4,10 +4,10 @@ import datetime
 import time
 import os
 from enum import Enum, auto
-import src.requestToVoiceText as requestToVoiceText
-import src.dbAccess as dbAccess
-import src.nanakapedia.WikipediaAbstractDbAccess as WikipediaDB
-import src.State as State
+import requestToVoiceText as requestToVoiceText
+import dbAccess as dbAccess
+import nanakapedia.WikipediaAbstractDbAccess as WikipediaDB
+import State as State
 
 
 voiceDataDir = "../voice/{}.wav"
