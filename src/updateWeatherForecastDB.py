@@ -3,8 +3,8 @@
 cronでこのファイルを実行するときは、必ず実行時のディレクトリをこのファイルと同じディレクトリにすること。
 """
 
-import src.getWeatherData as getWeatherData
-import src.dbAccess as dbAccess
+import getWeatherData as getWeatherData
+import dbAccess as dbAccess
 
 
 if __name__ == '__main__':

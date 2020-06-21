@@ -2,9 +2,9 @@
 """
 
 
-import src.transcribe_streaming_mic as voice2text
-import src.playVoice as playVoice
-import src.State as State
+import transcribe_streaming_mic as voice2text
+import playVoice as playVoice
+import State as State
 
 
 def main():
@@ -38,5 +38,5 @@ def do_nanakapedia():
 
 
 if __name__ == '__main__':
-    # main()
-    do_nanakapedia()
+    main()
+    # do_nanakapedia()

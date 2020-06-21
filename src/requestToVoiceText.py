@@ -1,4 +1,4 @@
-import src.VoiceTextWebAPIKey as Key
+import VoiceTextWebAPIKey as Key
 import requests
 
 
