@@ -9,6 +9,10 @@ class State:
     """入力メッセージと規定コマンドの最小類似度。もっとも類似度の高い規定コマンドの類似度がこの値以下の場合は認識不能とする。"""
 
     STATES = {
+        "voice_file_does_not_exist":
+            {
+                "voice_data_file": ["エラー。音声ファイルが存在しません"],
+            },
         "unknown":
             {
                 "voice_data_file": ["ごめんなさい、ちょっとよくわかりません"],

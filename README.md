@@ -108,9 +108,7 @@ eval "$(pyenv init -)"
 
 `source ~/.bashrc`で反映
 
-Pythonのコンパイルに必要なライブラリとパッケージのインストール
-
-`sudo apt install build-essential tk-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libssl-dev libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev libffi-dev tar wget vim`
+[pyenv 依存パッケージ](https://github.com/pyenv/pyenv/wiki)を参考に、Pythonのコンパイルに必要なライブラリとパッケージをインストールする。
 
 `pyenv install [Pythonバージョン]`でPythonインストール。
 ここではバージョン3.8.3をインストールするので`pyenv install 3.8.3`

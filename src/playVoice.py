@@ -10,7 +10,6 @@ import nanakapedia.WikipediaAbstractDbAccess as WikipediaDB
 import State as State
 import chat.requestToChaplus as requestToChaplus
 
-
 voiceDataDir = "../voice/{}.wav"
 """音声ファイルの格納ディレクトリ"""
 
@@ -38,16 +37,15 @@ def play_voice_file(voice_file_path: str) -> None:
 
     """
 
-    # 音声ファイルが存在しない場合は新たに音声を合成する
+    # 音声ファイルが存在しない場合は、代わりにエラー音声を出力するよう設定する
     if not os.path.exists(voice_file_path):
-        requestToVoiceText.VoiceText().set_text(
-            os.path.splitext(os.path.basename(voice_file_path))[0]).request_to_voice_text()
+        voice_file_path = get_voice_file_path("voice_file_does_not_exist")
 
-    wait_time_after_play = 0.5
+    wait_seconds_after_play = 0.5
     """音声ファイル再生後に待つ時間。音声ファイルを連続して再生すると不自然につながってしまうので間を置く"""
     command = "aplay " + voice_file_path
     subprocess.call(command, shell=True)
-    time.sleep(wait_time_after_play)
+    time.sleep(wait_seconds_after_play)
     return
 
 
@@ -176,7 +174,7 @@ class PlayResponseVoice:
                 requestToVoiceText.VoiceText().set_text(best_response).request_to_voice_text(
                     get_voice_file_path("chat_response"))
                 self.voice_file = get_voice_file_path("chat_response")
-            self.play_voice_file()
+            play_voice_file(self.voice_file)
             return self
 
         # 天気予報を読み上げる音声ファイルを取得
@@ -197,33 +195,11 @@ class PlayResponseVoice:
             self.voice_file = get_voice_file_path(self.state)
 
         # 音声を再生
-        self.play_voice_file()
+        play_voice_file(self.voice_file)
 
         # 悪い予報のときは外出時に傘を持つよう警告する
         if self.state == "go_out":
             self.play_response_voice_in_bad_weather()
-
-        return self
-
-    def play_voice_file(self) -> None:
-        """音声ファイルを再生する。
-        Returns:
-            None
-
-        """
-
-        print("state: ", self.state)
-
-        # 音声ファイルが存在しない場合は新たに音声を合成する
-        if not os.path.exists(self.voice_file):
-            requestToVoiceText.VoiceText().set_text(
-                os.path.splitext(os.path.basename(self.voice_file))[0]).request_to_voice_text()
-
-        wait_seconds_after_play = 0.5
-        """音声ファイル再生後に待つ時間（秒）。音声ファイルを連続して再生すると不自然につながってしまうので間を置く"""
-        command = "aplay " + self.voice_file
-        subprocess.call(command, shell=True)
-        time.sleep(wait_seconds_after_play)
 
         return self
 
@@ -339,4 +315,4 @@ def test():
 
 if __name__ == '__main__':
     # test()
-    PlayResponseVoice("今日もかわいいね").play_response_voice()
+    PlayResponseVoice("おはよう").play_response_voice()
