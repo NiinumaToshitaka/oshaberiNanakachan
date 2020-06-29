@@ -15,7 +15,7 @@ class RecordVoice:
     VOICEACTIVITY_IS_DETECTED = 1
     WAIT_SECOND_AFTER_NO_VOICE_ACTIVITY = 1.0
     INTERVAL_SECOND_TO_GET_STATUS = 0.1
-    RECORDED_FILE_NAME = "/tmp/test.wav"
+    RECORDED_FILE_NAME = "/tmp/recorded_voice.wav"
 
     def get_voice_activity_status(self):
         """codamaから現在の音声アクティビティ検出状態を取得する。
