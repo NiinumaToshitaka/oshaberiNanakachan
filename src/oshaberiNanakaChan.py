@@ -2,12 +2,14 @@
 """
 
 
-import transcribe_streaming_mic as voice2text
+from speech_transcribe_sync import SpeechTranscribeSync as voice2text
 import playVoice as playVoice
 import State as State
+from recordVoice import RecordVoice
 
 
 def main():
+    RecordVoice().record_by_subprocess()
     text = voice2text.listen()
     print("input_message: " + text)
     state = State.State().get_state(text)

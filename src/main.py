@@ -17,6 +17,7 @@ def detected(value):
 # これを実行しないと、このスクリプトを再度実行したとき失敗する
 def cleanup():
     print("cleanup codama gpio")
+    GPIO.setmode(GPIO.BCM)
     GPIO.remove_event_detect(CODAMA_TRIGGERD_GPIO)
     GPIO.cleanup()
 
@@ -36,9 +37,11 @@ def codama_setup():
 if __name__ == "__main__":
     try:
         codama_setup()
+        print("Wait for wakeup word input...")
         while True:
             # ウェイクワードを検出したらメイン処理を実行する
             if GPIO.input(CODAMA_TRIGGERD_GPIO) == GPIO.HIGH:
+                print("Detect wakeup word.")
                 main()
                 break
             # ウェイクワードを検出していなければ待つ

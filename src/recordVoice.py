@@ -35,11 +35,12 @@ class RecordVoice:
     def record_by_subprocess(self):
         """音声を録音する。
         """
-        RECORDING_COMMAND = ["arecord", "-c1", "-fS16_LE", "-r16000", "-d10", RecordVoice.RECORDED_FILE_NAME]
+        RECORDING_COMMAND = ["arecord", "-c1", "-fS16_LE", "-r16000", "-d10", "--buffer-size=192000", RecordVoice.RECORDED_FILE_NAME]
         no_voice_activity_time = 0.0
 
         # 録音開始
         record_process = subprocess.Popen(RECORDING_COMMAND, stdout=PIPE, text=True)
+        print("recording start.")
 
         while True:
             # 現在の音声アクティビティの検出状態を取得
@@ -47,6 +48,7 @@ class RecordVoice:
 
             # 音声アクティビティを検出したら経過時間のカウントを開始
             if voice_activity_status == RecordVoice.VOICEACTIVITY_IS_DETECTED:
+                print("VOICEACTIVITY start.")
                 # 音声アクティビティを検出しなくなってから指定時間だけ経過するまで待つ
                 while no_voice_activity_time < RecordVoice.WAIT_SECOND_AFTER_NO_VOICE_ACTIVITY:
                     voice_activity_status = RecordVoice.get_voice_activity_status(self)
@@ -57,10 +59,8 @@ class RecordVoice:
                     time.sleep(RecordVoice.INTERVAL_SECOND_TO_GET_STATUS)
                 # 録音を終了する
                 record_process.send_signal(SIGINT)
-                result = record_process.communicate()
-                (stdout, stderr) = (result[0], result[1])
-                print('STDOUT: {}'.format(stdout))
-                print('STDERR: {}'.format(stderr))
+                record_process.communicate()
+                print("recording end.")
                 print("VOICEACTIVITY end.")
                 break
 
