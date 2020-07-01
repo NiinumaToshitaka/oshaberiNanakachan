@@ -112,7 +112,7 @@ class State:
         closest_state = max(tmp_states, key=lambda x: difflib.SequenceMatcher(None, input_message, x[1]["input_message"]).ratio())
         # 入力メッセージと規定コマンドの類似度を計算
         matching_ratio = difflib.SequenceMatcher(None, input_message, closest_state[1]["input_message"]).ratio()
-        print("input_message: {}".format(input_message))
+        print("closest_state: {}".format(closest_state))
         print("matching_ratio: {:.2f}".format(matching_ratio))
 
         # 類似度が規定値以上の場合は現在の状態を更新

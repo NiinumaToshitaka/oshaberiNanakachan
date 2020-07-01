@@ -24,7 +24,6 @@ class RecordVoice:
         VOICEACTIVITY_GET_COMMAND = CODAMA_UTILS_DIRECTORY_PATH + "codama_i2c VOICEACTIVITY"
 
         voice_activity_status = int(subprocess.run(VOICEACTIVITY_GET_COMMAND, shell=True, stdout=PIPE, stderr=PIPE, text=True).stdout.split(':')[1].strip())
-        print("VOICEACTIVITY status: ", voice_activity_status)
         return voice_activity_status
 
     def record_by_subprocess(self):
