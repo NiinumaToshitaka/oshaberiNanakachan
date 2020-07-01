@@ -9,9 +9,17 @@ class State:
     """入力メッセージと規定コマンドの最小類似度。もっとも類似度の高い規定コマンドの類似度がこの値以下の場合は認識不能とする。"""
 
     STATES = {
+        "voice_file_does_not_exist":
+            {
+                "voice_data_file": ["エラー。音声ファイルが存在しません"],
+            },
         "unknown":
             {
                 "voice_data_file": ["ごめんなさい、ちょっとよくわかりません"],
+            },
+        "chat_response":
+            {
+                "voice_data_file": ["chat_response"],
             },
         "morning":
             {
@@ -75,6 +83,10 @@ class State:
             {
                 "voice_data_file": ["wikipedia_abstract"],
             },
+        "StartSpeechToText":
+            {
+                "voice_data_file": ["なんですか？", "どうしました？"],
+            },
     }
     """状態一覧"""
 
@@ -100,7 +112,7 @@ class State:
         closest_state = max(tmp_states, key=lambda x: difflib.SequenceMatcher(None, input_message, x[1]["input_message"]).ratio())
         # 入力メッセージと規定コマンドの類似度を計算
         matching_ratio = difflib.SequenceMatcher(None, input_message, closest_state[1]["input_message"]).ratio()
-        print("input_message: {}".format(input_message))
+        print("closest_state: {}".format(closest_state))
         print("matching_ratio: {:.2f}".format(matching_ratio))
 
         # 類似度が規定値以上の場合は現在の状態を更新

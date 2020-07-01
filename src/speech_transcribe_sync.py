@@ -75,6 +75,7 @@ class SpeechTranscribeSync:
 
     def listen():
         text = SpeechTranscribeSync.sample_recognize(SpeechTranscribeSync.DEFAULT_LOAD_VOICE_FILE)
+        print("text: {}".format(text))
         return text
 
     def main():

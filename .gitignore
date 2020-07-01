@@ -1,6 +1,7 @@
 # private keys
 /src/VoiceTextWebAPIKey.py
 /src/OshaberiNanakaChan-03311cf17b12.json
+/src/chat/ChaplusAPIKey.py
 
 # data files
 /voice/

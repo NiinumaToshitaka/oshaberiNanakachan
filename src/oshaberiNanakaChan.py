@@ -9,12 +9,10 @@ from recordVoice import RecordVoice
 
 
 def main():
+    playVoice.play_voice_file(playVoice.get_voice_file_path("StartSpeechToText"))
     RecordVoice().record_by_subprocess()
     text = voice2text.listen()
-    print("input_message: " + text)
-    state = State.State().get_state(text)
-    print("state: " + state)
-    playVoice.play_voice(state)
+    playVoice.PlayResponseVoice(text).play_response_voice()
 
 
 def do_nanakapedia():
