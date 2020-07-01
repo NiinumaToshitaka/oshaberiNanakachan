@@ -62,93 +62,6 @@ def get_voice_file_path(state: str) -> str:
     return voiceDataDir.format(random.choice(State.State.STATES[state]["voice_data_file"]))
 
 
-def play_voice(state: str) -> None:
-    """現在の状態に対応する音声を再生する。
-
-    Args:
-        state (str): 現在の状態
-
-    Returns:
-        None
-    """
-
-    voice_file = get_voice_file_path("unknown")
-    """再生する音声ファイルのパス"""
-
-    # 天気予報を読み上げる音声ファイルを取得
-    if state == "weather_today":
-        if get_weather_forecast_voice(datetime.datetime.now()):
-            voice_file = get_voice_file_path("weather")
-        else:
-            voice_file = get_voice_file_path("failedToGetWeatherData")
-    elif state == "weather_tomorrow":
-        if get_weather_forecast_voice(datetime.datetime.now() + datetime.timedelta(days=1)):
-            voice_file = get_voice_file_path("weather")
-        else:
-            voice_file = get_voice_file_path("failedToGetWeatherData")
-    # 現在の状態に対応する音声ファイルを取得
-    elif state in State.State.STATES.keys():
-        # リストからランダムに音声を指定
-        voice_file = get_voice_file_path(state)
-
-    # 音声を再生
-    play_voice_file(voice_file)
-
-    # 悪い予報のときは外出時に傘を持つよう警告する
-    if state == "go_out":
-        weather_forecast_data = dbAccess.get_weather_forecast_from_db(datetime.datetime.now())
-        is_bad_weather = False
-        for weather in bad_weather:
-            if weather in weather_forecast_data['telop']:
-                is_bad_weather = True
-        if is_bad_weather:
-            play_voice_file(get_voice_file_path("badWeather"))
-
-    return
-
-
-def get_weather_forecast_voice(date: datetime.datetime) -> bool:
-    """天気予報を読み上げる音声を取得する。
-
-    Args:
-        date (datetime.datetime): データベースから天気予報データを取得する日時
-
-    Return:
-        (bool): 音声取得に成功したか否か。
-                    True: 成功
-                    False: 失敗
-    """
-
-    # データベースから天気予報データを取得する
-    weather_forecast_data = dbAccess.get_weather_forecast_from_db(date)
-
-    # 天気予報データを取得できなかった場合は何もしない
-    if not weather_forecast_data:
-        return False
-
-    # 日付テキストを作成
-    weather_voice_base_string = "{}月{}日の天気は".format(date.today().month, date.today().day)
-    # 引数の日付が実行時の当日にあたる場合
-    if date.date() == datetime.datetime.now().date():
-        weather_voice_base_string = "今日の天気は"
-    # 引数の日付が実行時の翌日にあたる場合
-    elif date.date() == (datetime.datetime.now() + datetime.timedelta(days=1)).date():
-        weather_voice_base_string = "明日の天気は"
-
-    # 天気テキストを作成
-    weather_voice_base_string += "{}です。".format(weather_forecast_data['telop'])
-    # 温度データが存在する場合は温度データテキストを作成
-    if weather_forecast_data['temp_max'] is not None and weather_forecast_data['temp_min'] is not None:
-        weather_voice_base_string += "最高気温は{}度、最低気温は{}度です。".format(weather_forecast_data['temp_max'],
-                                                                   weather_forecast_data['temp_min'])
-
-    # 天気予報データを読み上げるボイスを合成
-    requestToVoiceText.VoiceText().set_text(weather_voice_base_string).request_to_voice_text(
-        get_voice_file_path("weather"))
-
-    return True
-
-
 class PlayResponseVoice:
     def __init__(self, input_message: str):
         self.input_message = input_message
@@ -179,12 +92,12 @@ class PlayResponseVoice:
 
         # 天気予報を読み上げる音声ファイルを取得
         if self.state == "weather_today":
-            if get_weather_forecast_voice(datetime.datetime.now()):
+            if self.get_weather_forecast_voice(datetime.datetime.now()):
                 self.voice_file = get_voice_file_path("weather")
             else:
                 self.voice_file = get_voice_file_path("failedToGetWeatherData")
         elif self.state == "weather_tomorrow":
-            if get_weather_forecast_voice(datetime.datetime.now() + datetime.timedelta(days=1)):
+            if self.get_weather_forecast_voice(datetime.datetime.now() + datetime.timedelta(days=1)):
                 self.voice_file = get_voice_file_path("weather")
             else:
                 self.voice_file = get_voice_file_path("failedToGetWeatherData")
@@ -202,6 +115,46 @@ class PlayResponseVoice:
             self.play_response_voice_in_bad_weather()
 
         return self
+
+    def get_weather_forecast_voice(date: datetime.datetime) -> bool:
+        """天気予報を読み上げる音声を取得する。
+
+        Args:
+            date (datetime.datetime): データベースから天気予報データを取得する日時
+
+        Return:
+            (bool): 音声取得に成功したか否か。
+                        True: 成功
+                        False: 失敗
+        """
+
+        # データベースから天気予報データを取得する
+        weather_forecast_data = dbAccess.get_weather_forecast_from_db(date)
+
+        # 天気予報データを取得できなかった場合は何もしない
+        if not weather_forecast_data:
+            return False
+
+        # 日付テキストを作成
+        weather_voice_base_string = "{}月{}日の天気は".format(date.today().month, date.today().day)
+        # 引数の日付が実行時の当日にあたる場合
+        if date.date() == datetime.datetime.now().date():
+            weather_voice_base_string = "今日の天気は"
+        # 引数の日付が実行時の翌日にあたる場合
+        elif date.date() == (datetime.datetime.now() + datetime.timedelta(days=1)).date():
+            weather_voice_base_string = "明日の天気は"
+
+        # 天気テキストを作成
+        weather_voice_base_string += "{}です。".format(weather_forecast_data['telop'])
+        # 温度データが存在する場合は温度データテキストを作成
+        if weather_forecast_data['temp_max'] is not None and weather_forecast_data['temp_min'] is not None:
+            weather_voice_base_string += "最高気温は{}度、最低気温は{}度です。".format(weather_forecast_data['temp_max'], weather_forecast_data['temp_min'])
+
+        # 天気予報データを読み上げるボイスを合成
+        requestToVoiceText.VoiceText().set_text(weather_voice_base_string).request_to_voice_text(
+            get_voice_file_path("weather"))
+
+        return True
 
     def play_response_voice_in_bad_weather(self) -> None:
         # 天気予報データを取得
@@ -288,13 +241,11 @@ class Nanakapedia:
             play_voice_file(get_voice_file_path("DoNotKnowTheWikipediaTitle"))
         # 判定できない場合
         else:
-            play_voice("unknown")
+            play_voice_file(get_voice_file_path("unknown"))
 
 
 def test():
-    # 明日の天気を読み上げる
-    play_voice("weather_tomorrow")
-    # 存在しない音声ファイルを再生しようとすると、新たに音声を合成して再生する
+    # 存在しない音声ファイルを再生しようとした場合は、エラー音声を再生する
     play_voice_file(voiceDataDir.format("fuga"))
 
     np = Nanakapedia()
@@ -307,10 +258,6 @@ def test():
     np.ask_does_know_the_title()
     np.set_has_known_the_title("KnowTheWikipediaTitle")
     np.play_the_ask_result()
-
-    # 状態に対応する音声を再生することをチェック
-    play_voice("morning")
-    play_voice("go_out")
 
 
 if __name__ == '__main__':
