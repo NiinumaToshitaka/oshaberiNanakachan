@@ -10,6 +10,8 @@ from signal import SIGINT
 class RecordVoice:
     """ユーザからの音声入力を扱うクラス
     """
+    RECORDED_FILE_NAME = "/tmp/recorded_voice.wav"
+
     def get_voice_activity_status(self):
         """codamaから現在の音声アクティビティ検出状態を取得する。
 
@@ -35,9 +37,8 @@ class RecordVoice:
         INTERVAL_SECOND_TO_GET_VOICE_ACTIVITY_STATUS = 0.1
         RECORDING_END_UP_TO_SECONDS = 10
         """録音を終了するまでの秒数"""
-        RECORDED_FILE_NAME = "/tmp/recorded_voice.wav"
 
-        RECORDING_COMMAND = ["arecord", "-c1", "-fS16_LE", "-r16000", "-d10", "--buffer-size=192000", RECORDED_FILE_NAME]
+        RECORDING_COMMAND = ["arecord", "-c1", "-fS16_LE", "-r16000", "-d10", "--buffer-size=192000", RecordVoice.RECORDED_FILE_NAME]
         no_voice_activity_time = 0.0
 
         # 録音開始
