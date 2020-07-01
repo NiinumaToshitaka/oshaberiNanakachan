@@ -64,11 +64,17 @@ def get_weather_forecast_from_db(date: datetime.datetime) -> dict:
     # 取得した天気予報データを格納
     data = {}
     fetched_data = c.fetchone()
-    if fetched_data is not None:
-        data['date'] = fetched_data['date']
-        data['telop'] = fetched_data['telop']
-        data['temp_max'] = fetched_data['temp_max']
-        data['temp_min'] = fetched_data['temp_min']
+    # 天気予報データを取得できなかった場合は、データベースを更新して再度取得する。
+    if fetched_data is None:
+        set_weather_forecast_to_db(getWeatherData.get_weather_forecast())
+        c.execute("SELECT * FROM {} WHERE date=?".format(table_name), (date.strftime('%Y-%m-%d'),))
+        data = {}
+        fetched_data = c.fetchone()
+
+    data['date'] = fetched_data['date']
+    data['telop'] = fetched_data['telop']
+    data['temp_max'] = fetched_data['temp_max']
+    data['temp_min'] = fetched_data['temp_min']
 
     conn.commit()
     conn.close()
@@ -82,7 +88,7 @@ if __name__ == '__main__':
     print("weather_data")
     pprint(weather_data)
     print("-" * 20)
-    set_weather_forecast_to_db(weather_data)
+    # set_weather_forecast_to_db(weather_data)
     data = get_weather_forecast_from_db(datetime.datetime.now())
     print("data")
     pprint(data)
