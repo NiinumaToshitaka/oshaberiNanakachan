@@ -116,7 +116,7 @@ class PlayResponseVoice:
 
         return self
 
-    def get_weather_forecast_voice(date: datetime.datetime) -> bool:
+    def get_weather_forecast_voice(self, date: datetime.datetime) -> bool:
         """天気予報を読み上げる音声を取得する。
 
         Args:

@@ -9,6 +9,7 @@ from recordVoice import RecordVoice
 
 
 def main():
+    playVoice.play_voice_file(playVoice.get_voice_file_path("StartSpeechToText"))
     RecordVoice().record_by_subprocess()
     text = voice2text.listen()
     print("input_message: " + text)

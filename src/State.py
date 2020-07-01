@@ -83,6 +83,10 @@ class State:
             {
                 "voice_data_file": ["wikipedia_abstract"],
             },
+        "StartSpeechToText":
+            {
+                "voice_data_file": ["なんですか？", "どうしました？"],
+            },
     }
     """状態一覧"""
 
