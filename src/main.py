@@ -41,12 +41,9 @@ if __name__ == "__main__":
         while True:
             # ウェイクワードを検出したらメイン処理を実行する
             if GPIO.input(CODAMA_TRIGGERD_GPIO) == GPIO.HIGH:
-                print("Detect wakeup word.")
                 main()
-                break
+                print("Wait for another wakeup word input...")
             # ウェイクワードを検出していなければ待つ
             time.sleep(0.1)
     except KeyboardInterrupt:
-        cleanup()
-    finally:
         cleanup()
