@@ -61,9 +61,14 @@ def get_weather_forecast_from_db(date: datetime.datetime) -> dict:
     # 指定された日付の天気予報データを取得
     c.execute("SELECT * FROM {} WHERE date=?".format(table_name), (date.strftime('%Y-%m-%d'),))
 
-    # 取得した天気予報データを格納
     data = {}
     fetched_data = c.fetchone()
+    # 天気予報データを取得できなかった場合は、データベースを更新して再度取得する。
+    if fetched_data is None:
+        set_weather_forecast_to_db(getWeatherData.get_weather_forecast())
+        c.execute("SELECT * FROM {} WHERE date=?".format(table_name), (date.strftime('%Y-%m-%d'),))
+        fetched_data = c.fetchone()
+    # 天気予報データを取得できた場合は辞書へ格納
     if fetched_data is not None:
         data['date'] = fetched_data['date']
         data['telop'] = fetched_data['telop']
