@@ -3,9 +3,9 @@
 """
 
 import sqlite3
-import getWeatherData as getWeatherData
 import datetime
 import os
+import getWeatherData as getWeatherData
 
 
 db_path = 'weather.db'
@@ -34,12 +34,7 @@ def set_weather_forecast_to_db(weather_data: list) -> None:
     # データベースに天気予報データを登録
     for data in weather_data:
         c.execute("INSERT INTO {} VALUES (?,?,?,?)".format(table_name), (
-                    data['date'],
-                    data['telop'],
-                    data['temp_max'],
-                    data['temp_min']
-                )
-            )
+            data['date'], data['telop'], data['temp_max'], data['temp_min']))
 
     conn.commit()
     conn.close()
@@ -66,13 +61,19 @@ def get_weather_forecast_from_db(date: datetime.datetime) -> dict:
     # 指定された日付の天気予報データを取得
     c.execute("SELECT * FROM {} WHERE date=?".format(table_name), (date.strftime('%Y-%m-%d'),))
 
-    # 取得した天気予報データを格納
     data = {}
     fetched_data = c.fetchone()
-    data['date'] = fetched_data['date']
-    data['telop'] = fetched_data['telop']
-    data['temp_max'] = fetched_data['temp_max']
-    data['temp_min'] = fetched_data['temp_min']
+    # 天気予報データを取得できなかった場合は、データベースを更新して再度取得する。
+    if fetched_data is None:
+        set_weather_forecast_to_db(getWeatherData.get_weather_forecast())
+        c.execute("SELECT * FROM {} WHERE date=?".format(table_name), (date.strftime('%Y-%m-%d'),))
+        fetched_data = c.fetchone()
+    # 天気予報データを取得できた場合は辞書へ格納
+    if fetched_data is not None:
+        data['date'] = fetched_data['date']
+        data['telop'] = fetched_data['telop']
+        data['temp_max'] = fetched_data['temp_max']
+        data['temp_min'] = fetched_data['temp_min']
 
     conn.commit()
     conn.close()
