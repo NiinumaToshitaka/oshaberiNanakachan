@@ -5,7 +5,7 @@
 import sqlite3
 import datetime
 import os
-import getWeatherData as getWeatherData
+from weather import getWeatherData as getWeatherData
 
 
 db_path = 'weather.db'
