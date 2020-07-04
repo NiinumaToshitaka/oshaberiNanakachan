@@ -5,7 +5,7 @@ import time
 import os
 from enum import Enum, auto
 import requestToVoiceText as requestToVoiceText
-import dbAccess as dbAccess
+from weather import dbAccess as dbAccess
 import nanakapedia.WikipediaAbstractDbAccess as WikipediaDB
 import State as State
 import chat.requestToChaplus as requestToChaplus
