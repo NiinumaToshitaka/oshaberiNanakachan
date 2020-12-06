@@ -1,13 +1,21 @@
-"""Weather Hacksから天気予報を取得
+"""天気予報APIから天気予報を取得
+Weather Hacks（livedoor天気）が2020/07にサービス終了したため，
+以下リンクで提供されている互換APIを代わりに使用する。
+<https://weather.tsukumijima.net/>
+
+以下は過去の情報
+-----
+Weather Hacksから天気予報を取得
 レスポンスの仕様は下記リンクの通り。（2020/04/11現在）
 <http://weather.livedoor.com/weather_hacks/webservice>
+-----
 """
 
 import requests
 import json
 
 
-base_url = 'http://weather.livedoor.com/forecast/webservice/json/v1'
+base_url = 'https://weather.tsukumijima.net/api/forecast'
 params = {'city': '140010'}  # 横浜市のID
 
 
@@ -23,8 +31,10 @@ def get_weather_forecast() -> list:
     weather_data = []
 
     for forecast in json_data['forecasts']:  # 'forecasts'内は配列になっているのでループ処理
-        t_max = forecast['temperature'].get('max')  # 'max'の値がnullの場合があるのでgetメソッド
-        t_min = forecast['temperature'].get('min')  # 'min'の値がnullの場合があるのでgetメソッド
+        t_max = forecast['temperature'].get(
+            'max')  # 'max'の値がnullの場合があるのでgetメソッド
+        t_min = forecast['temperature'].get(
+            'min')  # 'min'の値がnullの場合があるのでgetメソッド
         # 'max', 'min'の値がNoneじゃなかった場合は摂氏を取得
         if t_max is not None:
             t_max = t_max['celsius']
